@@ -1,0 +1,1148 @@
+nexus-tasks: 1
+phases:
+  - key: '1'
+    name: Core timer, flash, and settings
+    tasks:
+      - id: T1
+        title: 'Mockup: Blinkr window, flash, and settings'
+        after: []
+        files:
+          - design/mockups/blinkr.html
+        status: done
+        commit: 029a66c702043aa57c458aa009165a9907c8ce40
+        body: |-
+          Create `design/mockups/blinkr.html`, one self-contained HTML page for the user to
+          review. Before designing, invoke the `frontend-design:frontend-design` skill with
+          the Skill tool and follow it: plan the tokens, check them against its list of
+          generic defaults, build, then screenshot the page in headless Chrome
+          (`mcp__chrome__new_page` with a `file://` URL) and fix what looks wrong.
+
+          Read `README.md` first. The product is a blank resizable window with no countdown
+          that flashes a color on an interval. Show each of these as framed window states at
+          realistic sizes. The default window is 760×480.
+          - Stopped idle window with one faint hint on how to open settings and start.
+          - Running idle window that is completely blank.
+          - The on-demand ways to reach settings: click, right-click menu, and the `S` key.
+            Space starts and stops. Escape or the close button closes settings.
+          - Flash states: smooth pulse (the default), hard blink, and several colors where
+            each pulse takes the next color in order. Animate them with CSS keyframes driven
+            by custom properties for peak opacity and period.
+          - The settings panel with interval (number plus seconds, minutes, or hours), flash
+            duration, colors (1 to 6, add and remove), idle color, style, intensity, rate,
+            always-on-top, Start/Stop, and Preview flash. Preview plays one real flash in
+            the window. Starting the timer hides the panel.
+          - The intensity control with the photosensitivity warning next to it, in its calm
+            state and its stronger state.
+          - Validation errors for out-of-range interval and duration, with Start disabled.
+          - Where the phase 2 features will sit, marked as later: borderless, fullscreen, a
+            global start/stop shortcut (off by default, with a Wayland note), and a preset
+            picker with save, rename, and delete.
+          - A table of defaults and limits.
+
+          Proposed defaults and limits, for the user to confirm at review:
+          - Interval: 10 minutes. Range 1 second to 24 hours.
+          - Flash duration: 2 seconds. Range 0.5 to 30 seconds.
+          - Colors: amber `#ffb547`. 1 to 6 colors.
+          - Style: pulse.
+          - Intensity: 60%, meaning peak opacity of the flash over the idle color.
+            Range 10% to 100%.
+          - Rate: 1 per second. Range 0.25 to 3 per second, in steps of 0.25.
+          - Idle color: a dark neutral.
+          - Always on top: off.
+          The warning turns stronger when rate is above 2/s, or for blink above 70%.
+          Under reduced motion the flash holds steady instead of oscillating.
+
+          Make the panel's controls live in the mockup: intensity, rate, and style update the
+          preview, and Preview flash plays one flash. Use system fonts only, no remote assets.
+          Write copy in plain sentence case. Run `pnpm format` so `pnpm format:check` passes.
+          In `notes`, list each design choice the reviewer should confirm.
+      - id: H1
+        title: Review the Blinkr mockup
+        after:
+          - T1
+        files:
+          - design/mockups/blinkr.html
+        status: approved
+        body: |-
+          Open `design/mockups/blinkr.html` and try its live controls. Confirm or change:
+          - Layout and copy of the idle hint, right-click menu, and settings panel.
+          - The proposed defaults and limits table, including the 3 per second rate cap.
+          - The warning copy and when it turns stronger.
+          - Colors cycling once per pulse within a flash.
+          - Steady hold under reduced motion.
+          - Where the phase 2 items sit, and the global hotkey defaulting to off.
+          Note any changed default or limit in the verdict. T2 builds the model with the
+          proposed values in parallel with this review, so the planner adds a task to apply
+          changes to `src/settings/model.ts` before the UI tasks run.
+      - id: T15
+        title: 'Mockup revision: minimal window controls'
+        after:
+          - T1
+        files:
+          - design/mockups/blinkr.html
+        status: done
+        commit: a63a0f95b2bc6aaa2a18f93ab1b2b9d0839e6a14
+        body: |-
+          Revise `design/mockups/blinkr.html`, the existing self-contained mockup page. The
+          user found the window too blank. "Invisible timer" in the request means no
+          countdown, not no UI. Keep the page's look, tokens, and every other section as
+          they are. Use system fonts only and no remote assets.
+
+          Change the window to show minimal controls:
+          - Stopped: a small control bar at the bottom centre with a Start button and a
+            settings button (gear icon, accessible name "Settings"). It replaces the faint
+            text hint. Key shortcuts go in the buttons' tooltips, e.g. "Start (Space)" and
+            "Settings (S)".
+          - Running: the window is blank. Moving the pointer over the window, a click on the
+            window, or Tab reveals the bar, now with Stop and the gear. It fades out after
+            about 2 s without pointer movement, when the pointer leaves the window, and
+            never while one of its buttons has keyboard focus. It never shows a countdown,
+            clock, or remaining time.
+          - Under reduced motion the bar shows and hides without fading.
+          - The bar is hidden while the settings panel is open.
+          - The gear opens settings. `S` and the right-click menu still open them. A click
+            on the empty window no longer opens settings; while running it only reveals
+            the bar.
+          - The bar stays readable over any idle color: a translucent dark pill with light
+            controls, kept quiet so the flash color stays the main color in the product.
+
+          Update the live window demo at the top, the "Window states" frames (add a
+          running frame with the bar revealed), the "Reaching settings" section, and the
+          "Choices to confirm" list so they match. Make the live demo's bar work: Start and
+          Stop toggle, the gear opens the panel, and the bar fades as described. Run
+          `pnpm format` so `pnpm format:check` passes. In `notes`, list each design choice
+          the reviewer should confirm.
+      - id: T16
+        title: 'Mockup fix: render every frame without JavaScript'
+        after:
+          - T15
+        files:
+          - design/mockups/blinkr.html
+        status: done
+        commit: 0295beffb1144bc2ceec879ac8b203d946da0951
+        body: |-
+          `design/mockups/blinkr.html` is reviewed in the Nexus frames viewer, which shows
+          the page without running its scripts. Today the static frames fill in their
+          contents from script at load: every `[data-chrome]` title bar (via `chromeHTML`)
+          and every `.bar[data-bar-static]` control bar (via `barHTML`), plus anything else
+          the script injects into a frame. In the viewer those come out empty, so the user
+          sees blank windows with no title bar and no Start/gear bar.
+
+          Fix it so the page looks complete with JavaScript disabled:
+          - Write the title bar markup and the control bar markup (Start or Stop button,
+            separator, gear icon as inline SVG) directly into the HTML of every static
+            frame. Remove the script code that injected them, or make it skip elements
+            that already have content.
+          - The live window at the top must also show its stopped state, with the title
+            bar and the Start/gear bar, as static HTML before any script runs. Its script
+            then only adds behaviour: toggling Start/Stop, opening the panel, fading.
+          - Check the rest of the page the same way: settings panels, menus, tooltips,
+            color swatches, warning states, and the defaults table must all be present in
+            the static HTML. Only interactive behaviour may depend on script.
+          - Keep the look, copy, and every section unchanged otherwise.
+
+          Verify it: in headless Chrome, open the file with JavaScript disabled (for
+          example with `mcp__chrome__emulate` or by loading a copy with the `<script>`
+          blocks stripped into a temp directory outside the repo) and take a full-page
+          screenshot. Every window frame must show its title bar, and every stopped or
+          revealed frame must show the control bar. Then confirm the live demo still
+          works with JavaScript on. Run `pnpm format` so `pnpm format:check` passes.
+          Report the screenshot paths in `notes`.
+      - id: T2
+        title: Vitest and the settings model
+        after: []
+        files:
+          - package.json
+          - pnpm-lock.yaml
+          - vitest.config.ts
+          - tsconfig.node.json
+          - src/settings/model.ts
+          - src/settings/model.test.ts
+        status: done
+        commit: 35c04530112b00ebc878a5f0b41846576281146e
+        body: |-
+          Add Vitest as the unit test runner and the shared settings model.
+
+          Dev dependencies, pinned exactly: `vitest` 5.1.1 (it accepts Vite 7), `jsdom`,
+          `@testing-library/react`, `@testing-library/dom`, and `@testing-library/user-event`,
+          at versions compatible with React 19.1. Create `vitest.config.ts` with the React
+          plugin, `environment: 'jsdom'`, and `include: ['src/**/*.test.{ts,tsx}']`. Add
+          that file to `tsconfig.node.json` `include`. Set the `test` script to
+          `node --test "tests/**/*.test.mjs" && vitest run`. The quoted glob is expanded by
+          Node, so it also works on Windows. Vitest must exit non-zero when it finds no test
+          files, which is its default; don't pass `--passWithNoTests`.
+
+          Create `src/settings/model.ts`:
+          ```ts
+          export type IntervalUnit = 'seconds' | 'minutes' | 'hours';
+          export type FlashStyle = 'pulse' | 'blink';
+          export interface Settings {
+            interval: { value: number; unit: IntervalUnit }; // total 1 s .. 24 h
+            flashDurationSeconds: number; // 0.5 .. 30
+            colors: string[];             // 1 .. 6 entries, lowercase '#rrggbb'
+            style: FlashStyle;
+            intensity: number;            // percent, integer 10 .. 100
+            rate: number;                 // flashes per second, 0.25 .. 3, step 0.25
+            idleColor: string;            // '#rrggbb'
+            alwaysOnTop: boolean;
+          }
+          export const DEFAULT_SETTINGS: Settings; // 10 min, 2 s, ['#ffb547'], 'pulse', 60, 1, '#1b1e25', false
+          export const LIMITS: { /* min and max for each numeric field, MAX_COLORS = 6 */ };
+          export function intervalMs(i: Settings['interval']): number;
+          export type FieldErrors = Partial<Record<'interval' | 'flashDurationSeconds' | 'colors' | 'intensity' | 'rate' | 'idleColor', string>>;
+          export function validateSettings(s: Settings): FieldErrors; // {} when valid
+          export function sanitizeSettings(raw: unknown): Settings;
+          export function isStrongFlash(s: Pick<Settings, 'style' | 'intensity' | 'rate'>): boolean; // rate > 2 || (blink && intensity > 70)
+          ```
+          `sanitizeSettings` never throws. It takes each field from `raw` when it is valid,
+          falls back to the default field by field, and drops unknown keys. Colors are
+          normalized to lowercase `#rrggbb`; bad entries are dropped, the list is truncated
+          to 6, and an empty result falls back to the default. Out-of-range numbers fall back
+          to the default; they are not clamped. Error messages use plain copy saying what
+          range works, e.g. "Enter a time between 1 second and 24 hours."
+
+          Tests in `src/settings/model.test.ts`:
+          - The defaults are valid.
+          - Each limit's bound is accepted and the value just outside it is rejected.
+          - Unit conversion for seconds, minutes, and hours.
+          - `sanitizeSettings` for `null`, a string, an array, a partial object, wrong types,
+            NaN and Infinity, bad colors, 7 colors, and unknown keys.
+          - `isStrongFlash` at each threshold.
+      - id: T3
+        title: Drift-free repeating schedule and timer hook
+        after:
+          - T2
+        files:
+          - src/timer/
+        status: done
+        commit: a4e3f9cd1399490652a162b3f486a96ce5802c64
+        body: |-
+          Create the timer as a pure schedule function plus a React hook. Use the `Settings`
+          type and `intervalMs` from `src/settings/model.ts`.
+
+          ```ts
+          // src/timer/schedule.ts
+          export interface Schedule { startedAt: number; intervalMs: number; flashMs: number }
+          export type TimerPhase =
+            | { kind: 'idle'; cycle: number; endsAt: number }
+            | { kind: 'flash'; cycle: number; startedAt: number; endsAt: number };
+          export function phaseAt(s: Schedule, now: number): TimerPhase;
+          // src/timer/useBlinkTimer.ts
+          export function useBlinkTimer(opts: { intervalMs: number; flashMs: number; now?: () => number }):
+            { running: boolean; phase: TimerPhase | null; start(): void; stop(): void; restart(): void };
+          ```
+          Semantics: each cycle is the interval followed by the flash. Cycle `k` flashes from
+          `startedAt + (k+1)*intervalMs + k*flashMs` for `flashMs`. `phaseAt` computes this
+          from absolute time only, with no accumulated state, so a late or skipped timer
+          never shifts later flashes. `cycle` is the 0-based cycle index.
+
+          The hook schedules one `setTimeout` to the next boundary (`endsAt`), then
+          recomputes from the clock. If it wakes late it jumps straight to the correct phase.
+          It also recomputes on `visibilitychange` and window `focus`. Default clock is
+          `Date.now`. `stop` clears timers and sets `phase` to null. `restart` keeps running
+          with `startedAt = now`, for timing changes made while running. When interval or
+          flash length changes while running, restart. Clean up on unmount.
+
+          No countdown or remaining time is exposed to the UI beyond `phase`.
+
+          Tests with `vi.useFakeTimers()` and an injected clock:
+          - The exact boundaries for the first three cycles.
+          - A timer fired 5 s late lands in the right phase and doesn't shift cycle 3.
+          - The clock jumping a whole cycle ahead, as after a sleep, skips a missed flash
+            instead of replaying it.
+          - Stop, restart, and an option change while running.
+          - Unmount clears pending timers.
+      - id: T4
+        title: CSS-driven flash surface
+        after:
+          - T2
+        files:
+          - src/flash/
+        status: done
+        commit: ee4f85603950c739c728fdbd4b365afff9318788
+        body: |-
+          Create the component that fills the window with the idle color and renders a flash.
+
+          ```ts
+          // src/flash/FlashSurface.tsx
+          export function FlashSurface(props: {
+            idleColor: string; colors: string[]; style: FlashStyle;
+            intensity: number; rate: number;
+            flashing: boolean;    // true for the flash's duration
+            flashKey: number;     // changes per flash so the animation restarts at 0
+            children?: React.ReactNode;
+          }): JSX.Element;
+          // src/flash/colors.ts
+          export function colorForPulse(colors: string[], pulseIndex: number): string;
+          ```
+          Put the keyframes in `src/flash/flash.css`, imported by the component. No `<style>`
+          injection, since the CSP forbids it. Drive them with custom properties set via the
+          `style` prop: `--flash-color`, `--flash-peak` (intensity / 100), and
+          `--flash-period` (1 / rate seconds).
+          - Pulse eases opacity 0 to peak to 0 each period.
+          - Blink is on at peak for half the period, then off, using `step-end`.
+          The flash layer is absolutely positioned over the whole surface with
+          `pointer-events: none`. Colors advance one per pulse, starting at the first color
+          on every flash, by counting `animationiteration` events.
+
+          Under `prefers-reduced-motion: reduce`, show the first color steady at peak for the
+          flash's duration, without oscillating. When `flashing` is false, render the idle
+          color only.
+
+          Tests in jsdom:
+          - Idle color with no flash.
+          - The flash layer's custom properties for each style.
+          - Color advances on fired `animationiteration` events and wraps around.
+          - A new `flashKey` restarts at the first color.
+          - The reduced-motion class when `matchMedia` reports it.
+          - `colorForPulse` with one color and with several.
+      - id: T5
+        title: Wire the timer and flash into the app
+        after:
+          - T3
+          - T4
+          - T15
+          - T16
+          - H1
+        files:
+          - src/main.tsx
+          - src/App.tsx
+          - src/App.test.tsx
+          - src/styles.css
+          - src/app/
+        status: done
+        commit: 8077b19952d4bdaf35d82e64c6031f25b73354e2
+        body: |-
+          Replace the placeholder in `src/main.tsx` with `src/App.tsx`. The app renders
+          `FlashSurface` (from `src/flash/FlashSurface.tsx`) full-window and drives it from
+          `useBlinkTimer` (from `src/timer/useBlinkTimer.ts`). Settings come from
+          `DEFAULT_SETTINGS`. Persistence and the settings panel arrive in later tasks, so
+          keep settings in one `useState` that those tasks can lift. The app starts stopped.
+
+          Follow the approved mockup (`design/mockups/blinkr.html`) and H1's verdict for:
+          - The minimal control bar: Start or Stop and a settings (gear) button. It shows
+            whenever the timer is stopped. While running the window is blank until the
+            pointer moves, the window is clicked, or Tab is pressed; then the bar fades in
+            and fades out again after about 2 s idle or when the pointer leaves, but never
+            while one of its buttons has focus. Under reduced motion it shows and hides
+            without fading. It never shows a countdown or time.
+          - Keys: Space toggles start and stop. Ignore keys while focus is in a form field.
+          The gear, `S`, and right-click open the settings panel when it lands; give the
+          gear an `onOpenSettings` hook that does nothing yet.
+          Suppress the webview's default context menu.
+
+          Dev-only overrides, for the visual checkpoint and browser checks: when
+          `import.meta.env.DEV`, read URL params and pass them through `sanitizeSettings`:
+          `interval` (seconds), `duration`, `style`, `intensity`, `rate`, `colors`
+          (comma-separated hex, without `#`), and `idle`. Add `autostart=1` to start
+          immediately. Production builds ignore them. Put this in
+          `src/app/devOverrides.ts` with tests.
+
+          Tests in `src/App.test.tsx`, with fake timers:
+          - Stopped shows the control bar with Start and the gear.
+          - Space starts and the bar hides; nothing else renders.
+          - While running, pointer movement reveals the bar with Stop, and it hides again
+            after the idle delay. It stays while a bar button has focus.
+          - The Start and Stop buttons toggle the timer.
+          - After the interval the flash is on, and after the duration it's off.
+          - Space stops.
+          - Space typed in an input does nothing.
+
+          Then run it live. Start Vite on a free port and use headless Chrome on
+          `?interval=3&duration=2&autostart=1`. Sample the flash layer's computed opacity
+          over time with `evaluate_script` to confirm it flashes and returns to idle twice.
+          Take screenshots. Report the URLs that work for H2, and any defects as
+          `defects:`.
+      - id: H2
+        title: Check the timer and flash by eye
+        after:
+          - T5
+        files: []
+        status: approved
+        body: |-
+          In the run worktree, run `pnpm dev` and open these in a browser:
+          - `http://localhost:1420/?interval=5&duration=2&autostart=1` for the default pulse.
+          - `…&style=blink` for blink.
+          - `…&colors=ffb547,6fd3c9,f27aa6` for several colors.
+          - `…&intensity=100&rate=3` for the strongest allowed flash.
+          Optionally run `pnpm desktop:dev` to see it in the native window.
+          Confirm the pulse feels gentle, the blink is crisp, colors cycle as expected, and
+          the timing holds over several cycles. Note any change in the verdict.
+      - id: T6
+        title: Persist settings with the Tauri store plugin
+        after:
+          - T2
+        files:
+          - package.json
+          - pnpm-lock.yaml
+          - src-tauri/Cargo.toml
+          - src-tauri/Cargo.lock
+          - src-tauri/src/lib.rs
+          - src-tauri/capabilities/
+          - src/persistence/
+          - tests/capabilities.test.mjs
+        status: done
+        commit: 9d84d118cadd591f117dd315930a5a89828b86f2
+        body: |-
+          Add `tauri-plugin-store` =2.5.1 to `src-tauri/Cargo.toml` and
+          `@tauri-apps/plugin-store` 2.5.1 to `package.json`, both pinned exactly. Update
+          both lockfiles. Register the plugin in `src-tauri/src/lib.rs`.
+
+          Create `src-tauri/capabilities/main.json` for window `main`, granting only the
+          store commands the adapter calls. Use individual `store:allow-*` permissions,
+          never `store:default`. Confirm the identifiers in
+          `src-tauri/gen/schemas/desktop-schema.json` after `pnpm build` and a Cargo build.
+          Create `tests/capabilities.test.mjs`, a Node test that reads every file in
+          `src-tauri/capabilities/` and asserts the exact sorted permission list and windows
+          `["main"]`. Later tasks extend that list.
+
+          ```ts
+          // src/persistence/settingsStore.ts
+          export interface KeyValueBackend { get(key: string): Promise<unknown>; set(key: string, value: unknown): Promise<void> }
+          export function tauriBackend(): Promise<KeyValueBackend>; // store file 'blinkr.json', saved after each set
+          export function browserBackend(storage?: Storage): KeyValueBackend; // localStorage, JSON
+          export function defaultBackend(): Promise<KeyValueBackend>; // isTauri() ? tauri : browser
+          export function loadSettings(b: KeyValueBackend): Promise<Settings>; // key 'settings', via sanitizeSettings
+          export function saveSettings(b: KeyValueBackend, s: Settings): Promise<void>;
+          export function createDebouncedSaver(b: KeyValueBackend, ms?: number): { save(s: Settings): void; flush(): Promise<void> };
+          ```
+          Take `sanitizeSettings` and `Settings` from `src/settings/model.ts`. A load
+          failure or corrupt value yields defaults, never a throw. A save failure is logged
+          with `console.warn` and not rethrown. Phase 2 stores presets under a separate key in
+          the same store, so keep the key a parameter internally.
+
+          Tests with an in-memory backend and a fake `Storage`:
+          - Round trip.
+          - Missing key gives defaults.
+          - A corrupt JSON string in `localStorage` gives defaults.
+          - A partially invalid object gives field-level defaults.
+          - The debounce coalesces rapid saves, and `flush` writes the last one.
+          - A rejected save doesn't throw.
+      - id: T7
+        title: Window adapter, always-on-top, and background throttling
+        after:
+          - T6
+        files:
+          - src/platform/
+          - src-tauri/tauri.conf.json
+          - src-tauri/capabilities/
+          - tests/capabilities.test.mjs
+          - tests/infrastructure.test.mjs
+        status: done
+        commit: 4b8f4b0d1c0a6a540dfd4514f3b66a6c54b24ce6
+        body: |-
+          Create `src/platform/window.ts`:
+          ```ts
+          export interface WindowControls { setAlwaysOnTop(on: boolean): Promise<void> }
+          export function windowControls(): WindowControls; // Tauri getCurrentWindow(), or no-ops when !isTauri()
+          ```
+          Errors from Tauri are caught and logged with `console.warn`, never thrown into the
+          UI. Add `core:window:allow-set-always-on-top` to
+          `src-tauri/capabilities/main.json` and to the list in
+          `tests/capabilities.test.mjs`.
+
+          In `src-tauri/tauri.conf.json`, give the main window `"label": "main"` explicitly
+          and `"backgroundThrottling": "disabled"`. The option works on macOS 14+ only; the
+          absolute-deadline schedule covers the other platforms. Leave the CSP, size, and
+          `resizable` unchanged. Add an assertion for these two keys to
+          `tests/infrastructure.test.mjs`.
+
+          Tests:
+          - The browser no-op path resolves.
+          - The Tauri path calls `setAlwaysOnTop` with the flag. Mock
+            `@tauri-apps/api/window` and `@tauri-apps/api/core` with `vi.mock`.
+          - A rejected call is swallowed and warned.
+      - id: T8
+        title: Settings panel with timing, colors, window, and start/stop
+        after:
+          - H1
+          - T15
+          - T16
+          - T5
+          - T6
+          - T7
+        files:
+          - src/settings/
+          - src/App.tsx
+          - src/App.test.tsx
+          - src/app/
+          - src/styles.css
+        status: done
+        commit: f55fd85e5e270e457ab22fab200b788f6ec07d02
+        body: |-
+          Build the settings panel from the approved mockup (`design/mockups/blinkr.html`),
+          following H1's verdict.
+          - Load settings at startup with `loadSettings(await defaultBackend())` from
+            `src/persistence/settingsStore.ts`. Render the idle surface immediately and apply
+            the loaded settings when they arrive.
+          - Save each valid change with `createDebouncedSaver`, and flush on `pagehide`.
+          - Apply `alwaysOnTop` through `windowControls()` from `src/platform/window.ts` on
+            load and on change.
+
+          Panel contents, in `src/settings/SettingsPanel.tsx` and related files:
+          - Timing: interval value plus a unit select, and flash duration.
+          - Colors: swatches, add up to 6 with `<input type="color">`, remove down to 1, and
+            edit.
+          - Window: idle color and keep on top.
+          - Start/Stop.
+          - A placeholder slot for the Flash section, built by the next task.
+
+          Validation: keep a draft per field and show `validateSettings` errors inline with
+          `aria-invalid` and `aria-describedby`. Only valid values reach settings and storage.
+          Start is disabled while any field is invalid.
+
+          Opening and closing:
+          - Opens from the control bar's gear button, the `S` key, or the right-click menu.
+            A click on the empty window doesn't open it. The control bar hides while the
+            panel is open. The menu is
+            a DOM menu: Open settings, Start/Stop timer, Preview flash, Keep on top, per
+            mockup.
+          - Closes on Escape, the close button, or a click outside the panel.
+          - Starting the timer closes it. Opening it while running doesn't stop the timer.
+          - Changing interval or duration while running calls the timer's `restart`.
+          - Focus moves into the panel on open and back on close.
+
+          Tests in jsdom:
+          - Each open and close path.
+          - Auto-hide on start.
+          - Each validation error and Start disabled.
+          - Valid edits saved, debounced, through an in-memory backend.
+          - Stored settings applied at load.
+          - Always-on-top calls the adapter.
+          - Add and remove color at the 1 and 6 bounds.
+          - Restart on a timing change while running.
+      - id: T9
+        title: Flash controls, photosensitivity warning, and preview
+        after:
+          - T8
+        files:
+          - src/settings/
+          - src/flash/
+          - src/App.tsx
+          - src/App.test.tsx
+          - src/styles.css
+        status: done
+        commit: 2df38c51a290a3e0ae086ec6aadad7daedc4ff7a
+        body: |-
+          Fill the Flash section slot in the settings panel (`src/settings/`) per the
+          approved mockup (`design/mockups/blinkr.html`) and H1's verdict:
+          - A style toggle for pulse or blink.
+          - An intensity slider, 10–100%.
+          - A rate slider, 0.25–3 per second in 0.25 steps.
+          - The mockup's visual preview of the flash shape, if it has one.
+          - The photosensitivity warning placed beside these controls.
+          Copy for each state comes from the mockup. The warning is always visible and
+          switches to its stronger state when `isStrongFlash` from
+          `src/settings/model.ts` is true. Give the warning `role="note"`. Both sliders show
+          their values and are keyboard-operable with visible focus.
+
+          Preview flash, also available from the right-click menu and the `P` key: plays
+          one flash with the current settings in the real window surface, using
+          `FlashSurface` from `src/flash/FlashSurface.tsx`, for `flashDurationSeconds`. It
+          doesn't start the timer or change its schedule. Pressing it again restarts the
+          preview. It is disabled while any field is invalid. If the timer flashes during a
+          preview, the timer's flash wins.
+
+          Tests:
+          - The warning in both states at each threshold.
+          - Slider bounds and steps.
+          - Style toggle.
+          - Preview flashes for the duration and ends, with fake timers.
+          - Preview doesn't change the timer schedule.
+          - The `P` key and the menu item.
+          - Preview disabled when invalid.
+      - id: T10
+        title: Live check of the phase 1 app in browser and native build
+        after:
+          - T9
+        files: []
+        status: done
+        commit: 9f1e030157329412de929255e6a4c242b8729c1d
+        body: |-
+          Exercise the real app; change no files.
+
+          Browser: start Vite on a free port with `pnpm exec vite --port <port>` and drive it
+          with headless Chrome (`mcp__chrome__*`).
+          - Open settings by the gear button, `S`, and right-click. Confirm the control bar
+            shows when stopped, hides while running, and reappears on pointer movement.
+          - Set the interval to 3 seconds and the duration to 1, then start. Confirm the
+            panel hides, the window is blank, and flashes occur, by sampling the flash
+            layer's computed opacity.
+          - Stop. Reload the page and confirm the settings persisted in `localStorage`.
+          - Try invalid input. Push the rate to 3 and check the warning turns stronger.
+          - Press Preview flash.
+          - Check the console for errors.
+          Take screenshots of each state.
+
+          Native: run `pnpm tauri build --bundles app --ci`, launch
+          `src-tauri/target/release/bundle/macos/Blinkr.app`, and confirm the process stays
+          up. Check that the store file appears under
+          `~/Library/Application Support/dev.blinkr.desktop/` after changing a setting, if
+          that can be driven. Native visuals and keep-on-top can't be inspected because
+          accessibility automation is denied; say so rather than failing. Stop every process
+          you start.
+
+          Report screenshot paths and findings in `notes`, and each problem found as
+          `defects:`.
+      - id: H3
+        title: Check the settings panel by eye
+        after:
+          - T10
+        files: []
+        status: approved
+        body: |-
+          Read T10's report. Then, in the run worktree, run `pnpm desktop:dev`, or
+          `pnpm dev` and open `http://localhost:1420`. Check:
+          - The control bar, and opening and closing settings by the gear, right-click,
+            and `S`.
+          - Editing every field and the validation errors.
+          - The warning near intensity in both states.
+          - Preview flash.
+          - Keep on top, which only shows in the native window.
+          - Start hiding the panel.
+          - Settings persisting across a relaunch.
+          Note changes in the verdict.
+      - id: T17
+        title: 'Fix: settings panel overshoots and snaps back in WebKit'
+        after: []
+        files:
+          - src/App.css
+          - src/app/layout.test.ts
+        status: done
+        commit: 541bdc8c0dc6a8558cfb8eaddb0faa3eadd413b1
+        body: |-
+          Bug the user found: when the settings panel opens in the native app, it slides
+          left past its resting place to the window's left edge, then jumps back right.
+          This happens in WebKit, which the macOS Tauri webview uses. Chrome is fine.
+
+          Cause, reproduced in Playwright WebKit at 760×480: `.app` in `src/App.css` has
+          `overflow: hidden`, so it is still a scroll container. During the `panel-in`
+          animation in `src/settings/settings.css`, the panel starts at
+          `translateX(100%)` and adds 380 px of scrollable overflow to `.app`. WebKit then
+          scrolls `.app` to reveal the focused interval input, even though the focus call
+          passes `preventScroll: true`. `.app.scrollLeft` reads 380 for the whole
+          animation, so the panel lands at left 0. When the animation ends the overflow
+          goes away, `scrollLeft` clamps to 0, and the panel snaps back to left 380. The
+          gear, `S`, and the right-click menu all trigger it.
+
+          Fix: in `src/App.css`, give `.app` `overflow: clip`, keeping
+          `overflow: hidden` on the line before it as a fallback. `clip` makes `.app`
+          no longer a scroll container, so nothing can scroll it. With that one change the
+          panel slides from 760 to 380 with `scrollLeft` staying 0. Don't change the
+          panel animation, the focus code, or the CSP.
+
+          Test: add `src/app/layout.test.ts`, a Vitest test that reads `src/App.css` with
+          `node:fs` and asserts the `.app` rule declares `overflow: clip`, with a comment
+          that explains the WebKit bug. jsdom can't run layout, so this test only guards
+          the rule.
+
+          Live check in WebKit. Start Vite with `pnpm exec vite --port <free port>`.
+          Install Playwright in a temp directory outside the repo:
+          `mkdir /tmp/pwk && cd /tmp/pwk && npm init -y && npm i playwright && npx playwright install webkit`.
+          Launch `webkit` at a 760×480 viewport. Open the panel by the gear, `S`, and
+          right-click then "Open settings". On each animation frame for 700 ms, sample
+          `.panel` `getBoundingClientRect().left` and `.app` `scrollLeft`. The left edge
+          must only decrease, from 760 down to 380, and `scrollLeft` must stay 0. Report
+          the samples before and after the fix in `notes`. Stop Vite when you're done.
+      - id: T18
+        title: 'Fix: animate the settings sidebar closing'
+        after:
+          - T17
+        files:
+          - src/App.tsx
+          - src/App.css
+          - src/App.test.tsx
+          - src/App.settings.test.tsx
+          - src/App.preview.test.tsx
+          - src/settings/
+          - src/app/
+        status: done
+        commit: f9b7c2827ca42844ef4e7fbbab28ed5bc1f4cb3c
+        body: |-
+          User report during the settings-panel review: closing the sidebar makes it
+          disappear immediately. Add a smooth slide out to the right, consistent with
+          the existing 0.22 s opening animation, before removing it from view.
+
+          Current cause: `src/App.tsx` conditionally mounts SettingsPanel on `panelOpen`,
+          so setting it false immediately unmounts the panel. `src/settings/settings.css`
+          only defines the `panel-in` animation. Separate the requested open state from
+          the panel's DOM presence, or use an equivalent small lifecycle, so the panel
+          remains visible for its exit and is removed only when that exit completes.
+          Update `src/settings/SettingsPanel.tsx` and its CSS as needed.
+
+          Cover every existing close path: Close settings, Escape, a pointer click outside,
+          and starting the timer from the panel or another control. Starting must still
+          start the timer immediately; the exit must not delay or reset its schedule.
+          Preserve existing opening behavior, settings persistence, validation, preview,
+          and focus restoration. A closing panel must stop accepting pointer and keyboard
+          input and must not leave focus inside hidden or inert content. Closing fully
+          and reopening must still discard invalid draft edits as before.
+
+          Handle repeated closes, closing during entry, and reopening during exit without
+          jumping or a stale completion removing a reopened panel. Ignore descendant or
+          unrelated animation/transition completion events. Under prefers-reduced-motion,
+          close promptly without waiting for an event that a disabled animation never
+          fires; cancelled or missing completion events must not strand the panel.
+          Preserve `.app`'s `overflow: clip` and its fallback in `src/App.css`: this
+          prevents WebKit from scrolling the app during the slide and reintroducing the
+          earlier overshoot-and-snap bug. Keep the CSP unchanged and add no dependency.
+
+          Update the existing App and SettingsPanel tests for the lifecycle. Verify the
+          close paths, presence until exit completion and removal afterward, reduced
+          motion, interrupted close/reopen, focus and interaction behavior, unrelated
+          completion events, invalid-draft reset, and immediate timer start. Use fake
+          timers or dispatched completion events for lifecycle tests; jsdom cannot prove
+          the visual animation.
+
+          Live-check in Chromium and WebKit using browser automation or Playwright
+          installed outside the repo (the previous WebKit check used `/tmp/pwk`). Run
+          Vite on a free port. At 760x480 and a narrow viewport, sample `.panel`'s
+          bounding rectangle on animation frames: its left edge must move smoothly
+          toward the right edge before it disappears, and `.app.scrollLeft` must stay 0.
+          Exercise each close path, rapid close/reopen, and reduced motion. Report sample
+          positions and findings in notes, and stop any processes you start.
+      - id: T19
+        title: 'Mockup: centered Start/Stop and Settings controls'
+        after:
+          - T18
+        files:
+          - design/mockups/controls.html
+        status: done
+        commit: c4d7988468b98b9a71b888114aa6c49a4fdfdd96
+        body: |-
+          Create `design/mockups/controls.html`, a new self-contained review page for
+          redesigning the window's Start/Stop and Settings buttons. The user suggested
+          centering them instead of placing them near the bottom and wants to approve
+          mockups before implementation. Do not change production code or the earlier
+          `design/mockups/blinkr.html` in this task.
+
+          Read `src/App.tsx`, `src/App.css`, `src/settings/SettingsPanel.tsx`,
+          `src/settings/settings.css`, and `design/mockups/blinkr.html` for the current
+          controls and drawer. The existing bar is horizontally centered, 24px above the
+          bottom. Centered in this proposal means both horizontally and vertically in
+          the window's content area, excluding any native title bar.
+
+          Present two distinct centered options: a refined compact Start/Stop + gear
+          group, and a primary Start/Stop button with a separate secondary Settings
+          button. Include a small current-layout reference and recommend one option,
+          with a short reason. Keep the product quiet and neutral, with clear Start,
+          Stop, and Settings names, readable contrast, useful hit areas, hover and
+          keyboard-focus states, and controls readable over dark and light idle colors.
+
+          Show these as static framed states at 760x480, plus narrow 360x480 and compact
+          320x240 content areas:
+          - Stopped: Start and Settings visible at the proposed center.
+          - Running, controls revealed: Stop and Settings at the same anchor; changing
+            Start to Stop must not shift the group.
+          - Running, idle: blank window with the controls hidden.
+          - Settings drawer open: no competing window controls over or behind it.
+          - Hover, focus, reduced motion, and contrast on a light idle color.
+
+          Preserve current interactions as the default proposal: stopped controls stay
+          visible; starting hides them unless keyboard focus keeps them visible; while
+          running pointer movement, a surface click, or Tab reveals them, and they fade
+          after 2 seconds of inactivity; keyboard focus keeps them visible. Space
+          toggles the timer, S opens settings, Escape closes settings, and right-click
+          retains the context menu. Do not add a countdown or audio. Propose any
+          intentional interaction change explicitly so H4 can decide it.
+
+          Every review frame, its buttons, icons, and title bar must exist in static
+          HTML and render with JavaScript disabled. Optional demos may enhance the page.
+          Use system fonts, local or inline assets, and no remote dependencies. Visually
+          inspect screenshots in Chromium and WebKit, including with scripts disabled,
+          and fix clipping or missing content before reporting. Format the new page
+          with the existing Prettier command. Run the plan checks and commit this task
+          using `/commit`. Report the mockup path, screenshots, recommendation, and the
+          placement, styling, and interaction choices H4 needs to approve.
+      - id: H4
+        title: Approve the redesigned window controls
+        after:
+          - T19
+        files:
+          - design/mockups/controls.html
+        status: approved
+        body: |-
+          Review `design/mockups/controls.html` before production implementation.
+          Choose the compact group or the separate-button option, or request changes.
+          Confirm centered placement, Start/Stop and Settings styling, spacing and hit
+          areas, normal and small-window layouts, focus and hover, and readability on
+          dark and light idle colors. Confirm the reveal/hide behavior while running
+          and how the controls disappear when settings opens.
+
+          Also confirm the dark settings drawer. If you approve it, T21 restyles the real
+          drawer to match. If you want the drawer to stay light, say so in the verdict and
+          T21 is skipped. Say whether proposed change P1 applies: the controls return only
+          after the drawer finishes closing.
+
+          Record the exact option and any changed interaction in the verdict. A generic
+          approval accepts T19's clearly labeled recommended option. Request changes
+          with pin or region comments if neither option is ready. T20 must wait for
+          this approval; the earlier H1 and H3 reviews do not approve this redesign.
+      - id: T20
+        title: Implement and verify the approved window controls
+        after:
+          - H4
+          - T19
+          - T18
+        files:
+          - src/App.tsx
+          - src/App.css
+          - src/App.test.tsx
+          - src/App.settings.test.tsx
+          - src/App.preview.test.tsx
+          - src/app/
+        status: done
+        commit: 6df0d676b3c6f8e4a60d6241426e2920f6ed38af
+        body: |-
+          Implement the Start/Stop and Settings control design selected in H4, using
+          `design/mockups/controls.html` as the visual spec for these controls. The
+          approved page and verdict supersede the bottom bar in the older
+          `design/mockups/blinkr.html` only for this surface. If the approval is
+          ambiguous, raise a question instead of choosing an unapproved design.
+
+          The current ControlBar and GearIcon live in `src/App.tsx`, and `.bar` rules
+          in `src/App.css` position the bar at `bottom: 24px`. Update these or extract
+          a small component under `src/app/` if needed. Use the H4-approved anchor and
+          responsive sizing. Keep Start/Stop's footprint stable across label changes,
+          and keep the group inside the content area at normal and small sizes.
+          Preserve semantic buttons, accessible names and shortcut hints, visible
+          keyboard focus, useful hit areas, and contrast over any chosen idle color.
+
+          Preserve the existing timer schedule, settings, preview, persistence, and
+          settings drawer layout. Retain the existing show/hide behavior unless H4
+          explicitly changes it: visible while stopped; hidden while running until
+          pointer movement, click, or Tab; 2-second idle fade; keyboard focus prevents
+          hiding. Controls leave the window while settings is open, without hidden
+          controls intercepting pointer events. Space, S, P, Escape, context-menu
+          actions, and focus restoration must still work. Keep the T18 drawer exit
+          lifecycle and T17's `overflow: hidden` fallback followed by `overflow: clip`.
+          Do not add countdowns, audio, dependencies, native permissions, or CSP changes.
+
+          Run the existing App, settings, preview, and layout tests. Update tests only
+          where behavior or accessibility changed, covering any new interaction from
+          H4 with meaningful assertions. Use fake timers for reveal/hide behavior.
+          Do not claim jsdom verifies positioning or add CSS-text tests for centering.
+
+          Live-check in Chromium and WebKit on a free Vite port at 760x480, 360x480,
+          and 320x240. Compare screenshots against the selected mockup: stopped Start,
+          revealed Stop, hidden running surface, keyboard focus, settings open and
+          close, reduced motion, and dark/light idle colors. Measure visible control
+          bounds to verify the approved anchor and no clipping or horizontal scroll.
+          Ensure Start/Stop does not move the group and opening/closing settings never
+          scrolls `.app` or reintroduces the WebKit overshoot. Exercise a short timer
+          cycle, stop it, and check the console for errors. Playwright may be installed
+          outside the repo as in the earlier WebKit checks. Stop processes you start.
+
+          Run the plan checks and commit using `/commit`. Report screenshots, viewport
+          measurements, check results, and each remaining issue as `defects:`. State
+          native visuals and Windows/Linux verification as unverified when unavailable.
+      - id: T21
+        title: Restyle the settings drawer to the dark theme
+        after:
+          - H4
+          - T18
+        files:
+          - src/settings/
+        status: done
+        commit: dd102e2f928c27075eee83835218de0fa7667209
+        body: |-
+          The user asked for a dark settings drawer in the design review of
+          `design/mockups/controls.html`. H4 approved that page. If H4's verdict
+          says the drawer stays light, change nothing, report that in `notes`, and finish.
+
+          Visual spec: the "Settings drawer open" section of `design/mockups/controls.html`
+          and its "Drawer open · Light idle" frame. Its drawer is abridged, so take colors
+          and the edge treatment from it, not its content. Read its
+          `/* Abridged settings drawer (dark) */` CSS block and its "Measured contrast: dark
+          drawer" table. Key values there: drawer background `#25282c`, ink `#eef0f2`,
+          muted `#a9b2ba`, dividers `#3c4147`, a left edge of
+          `1px solid rgba(255, 255, 255, 0.14)` plus `box-shadow: -12px 0 28px
+          rgba(0, 0, 0, 0.45)`, and a white focus outline. The rim and shadow keep the
+          drawer distinct over a light idle color.
+
+          Restyle the real drawer in `src/settings/settings.css`. Today `.panel, .menu` share
+          one light token block there (`--ink`, `--muted`, `--sheet`, `--sheet-line`,
+          `--field`, `--field-line`, `--track`, `--error`, the `--calm-*` warning tokens, and
+          the `--hot-*` ones). Give `.panel` its own dark values. The right-click menu keeps
+          its current light look, since the mockup says it opens as it does today. Change
+          `.tsx` files under `src/settings/` only if a hard-coded color forces it.
+
+          The mockup doesn't show every part, so derive dark values for the rest and meet
+          its targets. Text needs 4.5:1 and outlines of fields, switches, and buttons need
+          3:1, against what sits behind them. That covers:
+          - fields, the unit select, and number inputs, plus their invalid state and the
+            inline error text
+          - the color swatches, the add and remove buttons, and the idle color swatch
+          - the style toggle, the keep-on-top switch, and the range tracks, progress, and
+            thumbs in WebKit and Firefox
+          - the photosensitivity warning in its calm and strong states. Keep calm and strong
+            clearly different, with strong still reading as a warning.
+          - the footer's Preview flash and Start/Stop, including disabled states
+          - focus-visible rings and the header close button
+          Keep the color-scheme of native controls consistent, for example with
+          `color-scheme: dark` on `.panel`, so native pickers and scrollbars aren't light.
+
+          Change only colors, borders, shadows, and the edge treatment. Layout, sizes,
+          copy, behavior, the `panel-in` animation, T18's exit animation, and every
+          `data-testid` and ARIA attribute stay as they are. Don't touch `src/App.css`,
+          `src/App.tsx`, or `src/app/`, which T20 edits at the same time. Keep the CSP
+          unchanged, and inject no `<style>` tags.
+
+          Tests: the existing settings, flash-section, and App tests must still pass
+          unchanged. jsdom can't check colors, so add no CSS-text tests.
+
+          Live check in Chromium and WebKit, on a free Vite port. Playwright can be
+          installed outside the repo, as in `/tmp/pwk`. Open the drawer at 760×480 and
+          360×480, over the default dark idle color and a light one (in dev,
+          `?idle=f2f3f5`). Screenshot the drawer with valid fields, an invalid interval,
+          the strong warning (rate 3), and keyboard focus on a field and a switch. Compare
+          them with the mockup. Measure the contrast of each pair above with computed
+          colors and report the ratios in a table in `notes`. Report each miss as
+          `defects:`. Stop every process you start.
+      - id: T22
+        title: 'Fix: fade window controls out when opening settings'
+        after:
+          - T20
+        files:
+          - src/App.tsx
+          - src/App.css
+          - src/App.test.tsx
+          - src/App.settings.test.tsx
+          - src/App.preview.test.tsx
+          - src/app/
+        status: done
+        commit: ec6e3da4dbdee1202cc7666e1f665f1ab7298d68
+        body: |-
+          User report during H3: clicking Settings makes the centered Start/Stop and
+          Settings controls disappear almost immediately. They should animate and fade
+          away smoothly. Preserve the existing fade-in behavior in all other cases.
+
+          In `src/app/ControlBar.tsx`, `covered` immediately sets `hidden={covered}`;
+          `.bar[hidden]` in `src/App.css` applies `display: none`, cutting off the
+          existing 250 ms opacity transition. Give the controls an exit lifecycle so
+          opening settings can finish the fade-out before display removal. Use the
+          existing timing and easing unless a measured issue requires otherwise.
+          Keep the drawer opening immediately; its animation must not wait for the bar.
+          Apply consistent behavior when settings opens via the gear, S, or context menu.
+
+          Disable pointer interaction and remove the covered controls from keyboard
+          navigation immediately, including during their visible exit. Preserve focus
+          moving into the drawer and returning after it closes. Keep controls hidden
+          throughout the drawer's closing animation, then retain their existing fade-in
+          when eligible to be shown. Preserve running/stopped reveal rules, the 2-second
+          idle fade, keyboard-focus behavior, and the approved centered pill design.
+          Handle rapid open/close/reopen without stale completion events or timers
+          hiding newly revealed controls. Reduced motion must finish immediately and
+          must not depend on an animation or transition event that will never fire.
+          Preserve the drawer exit lifecycle and the WebKit overflow clipping fix.
+
+          Run the existing App, settings, preview, and layout tests. Add meaningful
+          interaction coverage for the exit lifecycle, immediate interaction blocking,
+          rapid toggles, and reduced motion where JavaScript manages these states.
+          Verify actual opacity over time in Chromium and WebKit on a free Vite port:
+          controls remain rendered at an intermediate opacity during settings opening,
+          finish fading out, stay hidden until drawer exit finishes, and fade back in
+          under the existing reveal rules. Check gear, S, and context-menu opening,
+          running and stopped states, and reduced motion. jsdom cannot prove a CSS
+          animation runs; report browser measurements or screenshots with timings.
+          Stop every process you start, run the plan checks, commit using `/commit`,
+          and report any remaining issue as `defects:`.
+  - key: '2'
+    name: Window modes, global hotkey, and presets
+    tasks:
+      - id: T11
+        title: Borderless and fullscreen modes
+        after: []
+        files:
+          - src/settings/
+          - src/platform/
+          - src/App.tsx
+          - src/App.test.tsx
+          - src/styles.css
+          - src-tauri/capabilities/
+          - tests/capabilities.test.mjs
+        status: done
+        commit: 4442e1c26b405d85379a5de7dd4c970bf7cbf0a0
+        body: |-
+          Add `borderless: boolean` and `fullscreen: boolean` to `Settings` in
+          `src/settings/model.ts`, both defaulting to false and sanitized field by field.
+          Extend `WindowControls` in `src/platform/window.ts` with `setBorderless(on)`
+          (calls `setDecorations(!on)`), `setFullscreen(on)`, `isFullscreen()`, and
+          `startDragging()`. Each one is a no-op in a plain browser and warns instead of
+          throwing. Add exactly `core:window:allow-set-decorations`,
+          `core:window:allow-set-fullscreen`, `core:window:allow-is-fullscreen`, and
+          `core:window:allow-start-dragging` to `src-tauri/capabilities/main.json` and to
+          `tests/capabilities.test.mjs`.
+
+          UI: add the Borderless and Full screen toggles in the settings panel's Window
+          section, where the approved mockup (`design/mockups/blinkr.html`) places them.
+          - Apply both on load and on change.
+          - In borderless mode, a mouse-down on the idle surface outside the panel and
+            window controls starts window dragging. Never initiate a drag from Start,
+            Stop, or Settings, including their descendants. A plain click still reveals
+            the control bar, so drag only after the pointer moves a few pixels.
+          - Escape leaves fullscreen when settings are closed, and the stored setting
+            follows.
+          - If the user exits fullscreen through the OS, resync on window `resize` with
+            `isFullscreen()`.
+          Note the help text: on some Linux window managers a borderless window can't be
+          resized from its edges.
+
+          Tests:
+          - Sanitizing the new fields.
+          - The adapter calls with mocks.
+          - The drag threshold versus a click.
+          - Escape leaving fullscreen.
+          - Resync on an OS exit.
+      - id: T12
+        title: Global start/stop hotkey (platform-specific)
+        after: []
+        files:
+          - package.json
+          - pnpm-lock.yaml
+          - src-tauri/Cargo.toml
+          - src-tauri/Cargo.lock
+          - src-tauri/src/lib.rs
+          - src-tauri/capabilities/
+          - tests/capabilities.test.mjs
+          - src/platform/
+          - src/settings/
+          - src/App.tsx
+          - src/App.test.tsx
+        status: done
+        commit: 94769e560cc3028a5a6de2e4cf2768f46c64a6ae
+        body: |-
+          Add `tauri-plugin-global-shortcut` =2.4.1 to `src-tauri/Cargo.toml` and
+          `@tauri-apps/plugin-global-shortcut` 2.4.1 to `package.json`, pinned exactly. Update
+          both lockfiles. Register the plugin in `src-tauri/src/lib.rs`, on desktop targets
+          only. Grant exactly `global-shortcut:allow-register`,
+          `global-shortcut:allow-unregister`, and `global-shortcut:allow-is-registered`,
+          dropping any of them the code doesn't call. Add them to
+          `src-tauri/capabilities/main.json` and `tests/capabilities.test.mjs`.
+
+          Add `globalShortcut: string | null` to `Settings` in `src/settings/model.ts`.
+          It defaults to `null`, meaning off. Valid values are `null` or one of three fixed
+          accelerators: `CommandOrControl+Alt+B`, `CommandOrControl+Shift+B`, and
+          `CommandOrControl+Alt+Space`.
+
+          `src/platform/shortcut.ts`:
+          ```ts
+          export function applyGlobalShortcut(accel: string | null, onToggle: () => void):
+            Promise<{ ok: true } | { ok: false; reason: string }>;
+          ```
+          It unregisters the previous accelerator, then registers the new one, firing on key
+          press only and ignoring release. It resolves `{ ok: false }` instead of throwing
+          when registration fails or Tauri is absent. In a plain browser the panel shows
+          "Available in the desktop app only." instead of the failure message.
+
+          The settings panel's Window section gets a select with Off and the three
+          accelerators, shown as the mockup does. It always shows help text that Linux under
+          Wayland may not allow global shortcuts. On a failure it shows "Couldn't register
+          this shortcut. Another app may be using it." The hotkey toggles start and stop like
+          Space.
+
+          Tests with mocks:
+          - Register, then change, unregisters the old one.
+          - Off unregisters.
+          - Failure gives the message.
+          - Release events are ignored.
+          - Browser no-op.
+          - Sanitizing invalid accelerators to `null`.
+      - id: T13
+        title: Saved presets
+        after: []
+        files:
+          - src/presets/
+          - src/persistence/
+          - src/settings/
+          - src/App.tsx
+          - src/App.test.tsx
+          - src/styles.css
+        status: done
+        commit: d8c8020305ba1f4fed05a3c87a1fc67c34d8911f
+        body: |-
+          Add named presets. A preset holds the timing and look fields of `Settings` from
+          `src/settings/model.ts`: interval, duration, colors, style, intensity, rate, and
+          idle color. Window fields stay global.
+
+          ```ts
+          // src/presets/presets.ts
+          export interface Preset { id: string; name: string; values: PresetValues }
+          export function sanitizePresets(raw: unknown): Preset[]; // drops invalid entries, values via sanitizeSettings
+          // src/persistence/: loadPresets(b), savePresets(b, presets) under key 'presets', same backend as settings
+          ```
+          UI follows the approved mockup (`design/mockups/blinkr.html`), in the settings
+          panel's header:
+          - Choosing a preset applies its values. If the timer is running, restart it.
+          - Save as new preset prompts for a name inline, not with `window.prompt`.
+          - Rename and Delete act on the selected preset.
+          - Names are 1–40 characters, trimmed, unique without regard to case. Duplicates
+            show an inline error.
+          - Editing a setting after applying a preset marks it modified and doesn't save it.
+            "Update preset" saves it.
+          - At most 20 presets; at 20, Save as new is disabled with a reason.
+
+          Tests:
+          - `sanitizePresets` with corrupt input.
+          - Persistence round trip.
+          - Apply, save, rename, delete, and the duplicate-name error.
+          - The 20 limit.
+          - The modified marker and Update preset.
+          - Applying while running restarts the timer.
+      - id: T14
+        title: Document the app and run the final live check
+        after:
+          - T11
+          - T12
+          - T13
+        files:
+          - README.md
+        status: done
+        commit: e164dbde208bf1d34b9d89f4f9f340621f1a3a2a
+        body: |-
+          Update `README.md` below its existing requirements; the check preserves everything
+          above `## Status`. Rewrite Status to describe what Blinkr does now. Add a usage
+          section:
+          - The control bar, opening settings, the keys (S, Space, P, Escape), and the
+            right-click menu.
+          - Presets and the window modes.
+          - The photosensitivity guidance, with the 3 per second cap.
+          Add a platform notes section:
+          - The global hotkey is off by default, and Linux under Wayland may refuse it.
+          - Some Linux window managers can't resize a borderless window from its edges.
+          - Background throttling is disabled on macOS 14+ only; scheduling stays correct
+            elsewhere.
+          List the native permissions the app grants, matching
+          `src-tauri/capabilities/main.json`. State what is still unverified: Windows and
+          Linux builds, remote CI, native visual inspection on macOS, and Wayland behavior.
+
+          Then rerun the live check:
+          - In headless Chrome against Vite on a free port: presets, the borderless and
+            fullscreen toggles (no-ops in the browser; confirm no errors), the hotkey select
+            in a browser showing its failure state, and a 3-second timer cycle.
+          - Build and launch the macOS `.app` and confirm the process stays up.
+          Report screenshots and findings in `notes`, and each problem as `defects:`.
+  - key: R1
+    name: Mockup review (H4)
+    tasks:
+      - id: R1
+        title: Round 1 · Address 2 review comments on controls.html
+        after:
+          - T19
+        files:
+          - design/mockups/controls.html
+        status: done
+        commit: 63d5c5a6ff60f160a9ea587fc53ec1e6218c8500
+        body: |-
+          Design review of `design/mockups/controls.html`, round 1:
+
+          1. region over <section> "Blinkr Start Settings Interval 10 minutes Flash duration 3 …" in scene "Settings drawer open"
+             - selector: `body > main:nth-of-type(1) > section:nth-of-type(7)` at fx 0.21, fy 0.27, fw 0.28, fh 0.69
+             - **user:** let's make the settings sidebar dark theme
+             - screenshot 1 attached
+          2. region over <div> "Start" in scene "Stopped"
+             - selector: `body > main:nth-of-type(1) > section:nth-of-type(4) > div:nth-of-type(1) > figure:nth-of-type(1) > div:nth-of-type(1)` at fx 0.35, fy 0.44, fw 0.28, fh 0.18
+             - **user:** I like option A, let's rewrite the mockups to be centered around option A
+             - screenshot 2 attached
+
+          Resolve each thread with `nexus_design_review` and a one-line note when it is addressed.

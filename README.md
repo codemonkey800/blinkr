@@ -89,9 +89,106 @@ Platform-sensitive items to verify early:
 
 ## Status
 
-The desktop infrastructure exists: the React/Vite frontend, Tauri shell, local checks,
-and unsigned native compilation are in place. Product timer and settings work are still
-pending.
+Blinkr works as a desktop app. The timer, flash surface, settings drawer, saved presets,
+always-on-top, borderless and fullscreen modes, and an optional global hotkey are all
+implemented. Settings and presets persist between launches, and the app always starts
+stopped. There is no audio and no countdown or clock readout anywhere.
+
+Defaults: a 2-second flash every 10 minutes, a smooth pulse at 60% intensity and 1 per
+second, in amber on a dark idle color.
+
+## Usage
+
+### Control bar
+
+The window shows a small control bar with a Start/Stop button and a settings gear. It is
+always visible while stopped. While running, it appears only after pointer movement, a
+click, or Tab, and fades out when idle. It never shows a time.
+
+Click the gear to open the settings drawer. Click outside the drawer, press Escape, or
+start the timer to close it.
+
+### Keys
+
+| Key      | Action                                                               |
+| -------- | -------------------------------------------------------------------- |
+| `S`      | Open settings.                                                       |
+| `Space`  | Start or stop the timer.                                             |
+| `P`      | Preview one flash with the current look. It never changes the timer. |
+| `Escape` | Close the menu, then the drawer. With both closed, leave fullscreen. |
+
+Keys are ignored while typing in a field, and while a button has focus when it handles
+the key itself. Escape works everywhere.
+
+### Right-click menu
+
+Right-click the window for Open settings, Start or Stop timer, Preview flash, and a Keep on
+top toggle. Text fields in the drawer keep the native menu for copy and paste.
+
+### Presets
+
+A preset saves the timing and look: interval, flash duration, colors, style, intensity,
+rate, and idle color. It does not save window modes or the hotkey. The picker is at the top
+of the drawer. Use it to save the current values as a new preset, update or rename the
+selected one, or delete it. Up to 20 presets are kept. Applying a preset while running
+restarts the timer from now. Presets are stored apart from settings and persist between
+launches.
+
+### Window modes
+
+- **Always on top:** keeps the window above others. Also in the right-click menu.
+- **Borderless:** removes the title bar and frame. Drag anywhere on the window to move it,
+  past a 4 px threshold so clicks still work.
+- **Fullscreen:** fills the screen. Escape leaves it, and the stored setting follows.
+
+Both modes are no-ops in a plain browser.
+
+### Photosensitivity
+
+Rapid, high-intensity flashing can trigger seizures in people with photosensitive
+epilepsy. The flash rate is capped at 3 per second, and the drawer shows a warning beside
+the style, intensity, and rate controls. The warning becomes a stronger one for rates above
+2 per second and for hard blinks above 70% intensity. Keep the defaults gentle, use a
+smooth pulse, and stop if anyone feels unwell.
+
+## Platform notes
+
+- **Global hotkey:** off by default. Pick one of three accelerators in the drawer. If another
+  app owns it, the drawer says it couldn't register. Linux under Wayland may refuse global
+  shortcuts altogether. In a plain browser the option reports that it is desktop-only.
+- **Borderless resize:** some Linux window managers can't resize a borderless window from
+  its edges. Turn borderless off to resize, or use the window manager's own resize.
+- **Background throttling:** the app asks the webview not to throttle timers while hidden,
+  but that only takes effect on macOS 14 and later. Elsewhere, scheduling uses absolute
+  deadlines, so flashes stay on time and the timer does not drift.
+
+### Native permissions
+
+The main window is granted exactly these, in `src-tauri/capabilities/main.json`:
+
+- `core:window:allow-is-fullscreen`
+- `core:window:allow-set-always-on-top`
+- `core:window:allow-set-decorations`
+- `core:window:allow-set-fullscreen`
+- `core:window:allow-start-dragging`
+- `global-shortcut:allow-is-registered`
+- `global-shortcut:allow-register`
+- `global-shortcut:allow-unregister`
+- `store:allow-get`
+- `store:allow-load`
+- `store:allow-save`
+- `store:allow-set`
+
+The app has no network access, and its content security policy is strict.
+
+### Still unverified
+
+- Windows and Linux builds, which have not been compiled or run.
+- The remote GitHub Actions matrix, which has not run.
+- Native visual inspection on macOS. Accessibility automation is denied here, so only the
+  browser rendering was inspected.
+- Wayland behavior, including the global hotkey.
+- Real Tauri behavior for dragging, fullscreen, and hotkey registration. Tests use mocks.
 
 ## Developer setup
 

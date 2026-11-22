@@ -14,31 +14,6 @@ body {
   min-height: 180px;
 }
 
-#root,
-.shell {
+#root {
   min-height: 100vh;
-}
-
-.shell {
-  display: grid;
-  place-content: center;
-  gap: 0.75rem;
-  justify-items: center;
-  background: radial-gradient(circle at center, #23262d 0%, #16181d 65%);
-}
-
-.marker {
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 999px;
-  background: #a8b0bd;
-  box-shadow: 0 0 1.75rem rgb(168 176 189 / 35%);
-}
-
-.wordmark {
-  color: #a8b0bd;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
 }

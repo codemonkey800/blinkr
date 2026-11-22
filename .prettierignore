@@ -9,3 +9,4 @@ src-tauri/icons/
 .DS_Store
 .idea/
 .vscode/
+.claude/

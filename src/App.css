@@ -1,0 +1,130 @@
+.app {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  /* Not a scroll container, so WebKit cannot scroll it to reveal a focused input
+     while the settings panel slides in from off-screen. */
+  overflow: clip;
+  user-select: none;
+}
+
+/* Focus returns here after the panel or menu closes. It is not a control. */
+.app:focus {
+  outline: none;
+}
+
+/* The stage fills the window and centers the pill with grid, not a transform. It ignores the
+   pointer, so only the pill can be hit. It sits above the flash layer. */
+.bar-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+/* A dark pill with a light ring, readable over any idle color: 164 x 54 around two 44px targets. */
+.bar {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid rgb(255 255 255 / 40%);
+  border-radius: 999px;
+  background: rgb(20 22 25 / 92%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 35%);
+  color: #fff;
+  transition: opacity 0.25s ease;
+  /* Fades in when it returns from display: none after the panel leaves, which a transition cannot. */
+  animation: bar-in 0.25s ease;
+}
+
+@keyframes bar-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Removed once the panel covers it and its fade-out has finished (ControlBar ends that fade),
+   so the fade can run while the panel opens. An uncovered bar that is only faded stays focusable,
+   so Tab reaches the buttons and focus brings the bar back. A covered bar is inert at once. */
+.bar[hidden] {
+  display: none;
+}
+
+.bar--away {
+  opacity: 0;
+  pointer-events: none;
+  animation: none;
+}
+
+.bar__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  min-width: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+}
+
+/* Start and Stop share this slot, so changing the label never moves the pill. */
+.bar__button--toggle {
+  width: 100px;
+  background: rgb(255 255 255 / 10%);
+}
+
+.bar__button:hover {
+  background: rgb(255 255 255 / 18%);
+}
+
+.bar__button--toggle:hover {
+  background: rgb(255 255 255 / 20%);
+}
+
+.bar__button:active {
+  background: rgb(255 255 255 / 28%);
+}
+
+.bar__button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 1px;
+}
+
+.bar__separator {
+  width: 1px;
+  height: 18px;
+  margin: 0 3px 0 2px;
+  background: rgb(255 255 255 / 24%);
+}
+
+.bar__glyph {
+  width: 12px;
+  height: 12px;
+  flex: none;
+}
+
+.bar__gear {
+  width: 17px;
+  height: 17px;
+  flex: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    transition: none;
+    animation: none;
+  }
+}

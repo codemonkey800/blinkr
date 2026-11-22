@@ -1,0 +1,70 @@
+.flash-surface {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.flash-surface__content {
+  position: relative;
+  min-height: inherit;
+}
+
+.flash-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-color: var(--flash-color);
+  opacity: 0;
+  animation-duration: var(--flash-period);
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+.flash-layer--pulse {
+  animation-name: blinkr-flash-pulse;
+  animation-timing-function: ease-in-out;
+}
+
+.flash-layer--blink {
+  animation-name: blinkr-flash-blink;
+  animation-timing-function: step-end;
+}
+
+/* Reduced motion: the first color, steady at peak, with no oscillation. */
+.flash-layer--reduced {
+  animation: none;
+  opacity: var(--flash-peak);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash-layer {
+    animation: none;
+    opacity: var(--flash-peak);
+  }
+}
+
+@keyframes blinkr-flash-pulse {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: var(--flash-peak);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* On at peak for the first half of the period, then off. `step-end` holds each value. */
+@keyframes blinkr-flash-blink {
+  0% {
+    opacity: var(--flash-peak);
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}

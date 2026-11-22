@@ -66,3 +66,10 @@ test('the built entry and configured desktop icons resolve to local files', () =
     assert.ok(existsSync(iconPath), `missing configured desktop icon: ${iconPath}`);
   }
 });
+
+test('the main window is labelled and keeps timers running in the background', () => {
+  const [mainWindow] = tauriConfig.app.windows;
+  assert.equal(mainWindow.label, 'main');
+  // Honoured on macOS 14+ only; the absolute-deadline schedule covers other platforms.
+  assert.equal(mainWindow.backgroundThrottling, 'disabled');
+});

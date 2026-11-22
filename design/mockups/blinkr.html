@@ -1,0 +1,4342 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blinkr mockup</title>
+    <style>
+      :root {
+        --bench: #dde0e3;
+        --ink: #1f2529;
+        --muted: #56606a;
+        --rule: #bcc3c9;
+        --idle: #1b1d20;
+        --amber: #ffb547;
+        --sheet: #f2f3f5;
+        --sheet-line: #d3d8dc;
+        --field: #ffffff;
+        --field-line: #98a2ab;
+        --track: #c9cfd4;
+        --calm-bg: #fff1d3;
+        --calm-line: #d9a441;
+        --calm-ink: #4f3600;
+        --hot-bg: #fde4e1;
+        --hot-line: #c8372d;
+        --hot-ink: #701510;
+        --error: #b3261e;
+        --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      html {
+        background: var(--bench);
+        color: var(--ink);
+        font: 16px/1.5 var(--font);
+        -webkit-text-size-adjust: 100%;
+      }
+      body {
+        margin: 0;
+      }
+      .page {
+        max-width: 1244px;
+        margin: 0 auto;
+        padding: 56px 32px 120px;
+      }
+
+      /* ---------- Page typography ---------- */
+      h1 {
+        margin: 0;
+        font-size: clamp(56px, 9vw, 112px);
+        line-height: 0.9;
+        letter-spacing: -0.045em;
+        font-weight: 700;
+      }
+      h2 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        font-weight: 650;
+      }
+      .intro {
+        max-width: 36em;
+        margin: 20px 0 40px;
+        font-size: 20px;
+        color: var(--muted);
+      }
+      .lede {
+        max-width: 64ch;
+        margin: 0 0 32px;
+        color: var(--muted);
+      }
+      section.plate {
+        margin-top: 96px;
+        padding-top: 28px;
+        border-top: 1px solid var(--rule);
+      }
+      section.plate.first {
+        margin-top: 0;
+        border-top: 0;
+        padding-top: 0;
+      }
+      p {
+        margin: 0;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      kbd {
+        font: inherit;
+        font-size: 13px;
+        padding: 1px 8px;
+        border: 1px solid #8b949c;
+        border-bottom-width: 2px;
+        border-radius: 6px;
+        background: #eef0f2;
+      }
+      :focus-visible {
+        outline: 2px solid var(--ink);
+        outline-offset: 2px;
+      }
+
+      /* ---------- Layout helpers ---------- */
+      .hero-row {
+        display: grid;
+        grid-template-columns: 760px minmax(0, 1fr);
+        gap: 40px;
+        align-items: start;
+      }
+      .pair {
+        --z: 0.7;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 48px 32px;
+      }
+      .trio {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 32px;
+      }
+      .stack {
+        display: grid;
+        gap: 56px;
+      }
+      .split {
+        display: flex;
+        gap: 40px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .split .words {
+        flex: 1 1 280px;
+        max-width: 46ch;
+      }
+
+      /* ---------- Frames ---------- */
+      figure.shot {
+        margin: 0;
+        min-width: 0;
+      }
+      figure.shot.live {
+        --z: 1;
+      }
+      .scroll {
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+      .device {
+        zoom: var(--z, 1);
+        width: calc(var(--w) * 1px);
+        border-radius: 10px;
+        overflow: hidden;
+        background: #fff;
+        box-shadow:
+          0 0 0 1px rgba(20, 28, 34, 0.28),
+          0 22px 40px -22px rgba(20, 28, 34, 0.55);
+      }
+      .chrome {
+        height: 32px;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        padding: 0 12px;
+        background: #e9ebee;
+        border-bottom: 1px solid #cbd0d5;
+        font-size: 12.5px;
+        color: #3b444b;
+      }
+      .chrome .t {
+        grid-column: 2;
+      }
+      .chrome .wc {
+        grid-column: 3;
+        justify-self: end;
+        display: flex;
+        gap: 14px;
+      }
+      .ic {
+        width: 12px;
+        height: 12px;
+        flex: none;
+      }
+      .win {
+        position: relative;
+        height: calc(var(--h) * 1px);
+        background: var(--idle);
+        overflow: hidden;
+        container-type: inline-size;
+        font-family: var(--font);
+      }
+      .win[tabindex]:focus-visible {
+        outline: 2px solid var(--amber);
+        outline-offset: -4px;
+      }
+      figcaption {
+        max-width: calc(var(--w) * var(--z, 1) * 1px);
+        margin-top: 14px;
+      }
+      figcaption .name {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 16px;
+        font-weight: 650;
+      }
+      figcaption .size {
+        font-weight: 400;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      figcaption .desc {
+        margin-top: 2px;
+        max-width: 60ch;
+        color: var(--muted);
+        font-size: 15px;
+      }
+      figcaption .line {
+        margin-top: 8px;
+        font-size: 14px;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
+      .trace {
+        display: block;
+        width: calc(var(--w) * var(--z, 1) * 1px);
+        max-width: 100%;
+        height: auto;
+        margin-top: 14px;
+      }
+      .trace text {
+        font: 11px var(--font);
+        fill: var(--muted);
+      }
+
+      /* ---------- Window content ---------- */
+      /* Control bar: a quiet dark pill, readable over any idle color. */
+      .bar {
+        position: absolute;
+        z-index: 2;
+        left: 50%;
+        bottom: 24px;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        padding: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(22, 24, 27, 0.78);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+        color: rgba(255, 255, 255, 0.9);
+        transition: opacity 0.25s ease;
+      }
+      .bar.away {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .bar-btn {
+        display: grid;
+        place-items: center;
+        height: 32px;
+        min-width: 32px;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: none;
+        color: inherit;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .bar-btn[data-bar='toggle'] {
+        padding: 0 14px;
+      }
+      .bar-btn:hover {
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .bar-btn:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 1px;
+      }
+      .bar-sep {
+        width: 1px;
+        height: 16px;
+        margin: 0 2px;
+        background: rgba(255, 255, 255, 0.22);
+      }
+      .bar .ic {
+        width: 16px;
+        height: 16px;
+      }
+      .tip {
+        position: absolute;
+        z-index: 3;
+        transform: translateX(-50%);
+        padding: 4px 8px;
+        border-radius: 5px;
+        background: var(--sheet);
+        color: var(--ink);
+        font-size: 12px;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+      }
+      .flash {
+        position: absolute;
+        inset: 0;
+        background: var(--cur, var(--amber));
+        opacity: 0;
+        pointer-events: none;
+      }
+      .flash.hold {
+        opacity: var(--peak, 0.6);
+      }
+      .flash.go {
+        animation-name: var(--shape, pulse), var(--hues, none);
+        animation-duration: var(--period, 1s), var(--cycle, 1s);
+        animation-timing-function: ease-in-out, steps(1, end);
+        animation-iteration-count: var(--count, 1), infinite;
+        animation-delay: 0s, calc(var(--shift, 0s) * -1);
+        animation-fill-mode: both, none;
+      }
+      .flash[data-style='blink'].go {
+        animation-timing-function: linear, steps(1, end);
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0;
+        }
+        50% {
+          opacity: var(--peak, 0.6);
+        }
+      }
+      @keyframes blink {
+        0%,
+        49.99% {
+          opacity: var(--peak, 0.6);
+        }
+        50%,
+        100% {
+          opacity: 0;
+        }
+      }
+      @keyframes hue2 {
+        0% {
+          background-color: var(--c1);
+        }
+        50% {
+          background-color: var(--c2);
+        }
+      }
+      @keyframes hue3 {
+        0% {
+          background-color: var(--c1);
+        }
+        33.333% {
+          background-color: var(--c2);
+        }
+        66.667% {
+          background-color: var(--c3);
+        }
+      }
+      @keyframes hue4 {
+        0% {
+          background-color: var(--c1);
+        }
+        25% {
+          background-color: var(--c2);
+        }
+        50% {
+          background-color: var(--c3);
+        }
+        75% {
+          background-color: var(--c4);
+        }
+      }
+      @keyframes hue5 {
+        0% {
+          background-color: var(--c1);
+        }
+        20% {
+          background-color: var(--c2);
+        }
+        40% {
+          background-color: var(--c3);
+        }
+        60% {
+          background-color: var(--c4);
+        }
+        80% {
+          background-color: var(--c5);
+        }
+      }
+      @keyframes hue6 {
+        0% {
+          background-color: var(--c1);
+        }
+        16.667% {
+          background-color: var(--c2);
+        }
+        33.333% {
+          background-color: var(--c3);
+        }
+        50% {
+          background-color: var(--c4);
+        }
+        66.667% {
+          background-color: var(--c5);
+        }
+        83.333% {
+          background-color: var(--c6);
+        }
+      }
+      /* Reduced motion: hold steady at peak for the whole flash. */
+      .reduced .flash.go {
+        animation: none;
+        opacity: var(--peak, 0.6);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .flash.go {
+          animation: none;
+          opacity: var(--peak, 0.6);
+        }
+        .panel,
+        .panel.open {
+          transition: none;
+        }
+        .bar {
+          transition: none;
+        }
+      }
+
+      /* Gesture markers */
+      .cursor {
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        color: #fff;
+        filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+      }
+      .ring {
+        position: absolute;
+        width: 56px;
+        height: 56px;
+        border: 2px solid rgba(255, 255, 255, 0.7);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .keycap {
+        position: absolute;
+        display: grid;
+        place-items: center;
+        width: 72px;
+        height: 72px;
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        border-bottom-width: 4px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        font-size: 34px;
+        font-weight: 600;
+      }
+
+      /* ---------- Context menu ---------- */
+      .menu {
+        position: absolute;
+        z-index: 5;
+        min-width: 210px;
+        padding: 5px;
+        background: var(--sheet);
+        color: var(--ink);
+        border-radius: 8px;
+        box-shadow:
+          0 0 0 1px rgba(0, 0, 0, 0.4),
+          0 10px 28px rgba(0, 0, 0, 0.45);
+        font-size: 13px;
+      }
+      .menu button {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        gap: 24px;
+        padding: 7px 10px;
+        border: 0;
+        border-radius: 5px;
+        background: none;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: pointer;
+      }
+      .menu button:hover,
+      .menu button:focus-visible,
+      .menu button.on {
+        background: var(--ink);
+        color: #fff;
+        outline: 0;
+      }
+      .menu kbd {
+        padding: 0 6px;
+        font-size: 12px;
+        background: none;
+        border: 1px solid currentColor;
+        border-bottom-width: 1px;
+        opacity: 0.75;
+      }
+
+      /* ---------- Settings panel ---------- */
+      .panel {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 4;
+        width: min(380px, 100%);
+        display: flex;
+        flex-direction: column;
+        background: var(--sheet);
+        color: var(--ink);
+        font-size: 13px;
+        line-height: 1.4;
+        box-shadow: -1px 0 0 rgba(0, 0, 0, 0.45);
+        transform: translateX(100%);
+        visibility: hidden;
+        transition:
+          transform 0.22s ease-out,
+          visibility 0s 0.22s;
+      }
+      .panel.open {
+        transform: none;
+        visibility: visible;
+        transition:
+          transform 0.22s ease-out,
+          visibility 0s;
+      }
+      @container (max-width: 560px) {
+        .panel {
+          width: 100%;
+        }
+      }
+      .panel.free {
+        position: static;
+        width: 100%;
+        height: auto;
+        transform: none;
+        visibility: visible;
+        border: 1px solid var(--sheet-line);
+        border-radius: 10px;
+        box-shadow: none;
+        overflow: hidden;
+      }
+      .panel > header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px 10px 20px;
+        border-bottom: 1px solid var(--sheet-line);
+      }
+      .panel h3 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 650;
+      }
+      .x {
+        display: grid;
+        place-items: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border: 0;
+        border-radius: 6px;
+        background: none;
+        color: inherit;
+        cursor: pointer;
+      }
+      .x:hover {
+        background: #e0e3e6;
+      }
+      .panel .body {
+        flex: 1;
+        overflow: auto;
+        padding: 0 20px;
+      }
+      .grp {
+        padding: 14px 0;
+        border-bottom: 1px solid var(--sheet-line);
+      }
+      .grp:last-child {
+        border-bottom: 0;
+      }
+      .field + .field {
+        margin-top: 12px;
+      }
+      .row2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        align-items: start;
+      }
+      .row2 .field + .field {
+        margin-top: 0;
+      }
+      .lab {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 5px;
+        font-weight: 600;
+      }
+      .lab label {
+        font-weight: inherit;
+      }
+      .lab output,
+      .lab .meta {
+        font-weight: 400;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
+      .help {
+        margin: 5px 0 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .join {
+        display: flex;
+        height: 34px;
+        background: var(--field);
+        border: 1px solid var(--field-line);
+        border-radius: 6px;
+        overflow: hidden;
+      }
+      .join:focus-within {
+        outline: 2px solid var(--ink);
+        outline-offset: 1px;
+      }
+      .join input,
+      .join select {
+        min-width: 0;
+        padding: 0 8px;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+      }
+      .join input {
+        flex: 1;
+        width: 100%;
+        font-variant-numeric: tabular-nums;
+        -moz-appearance: textfield;
+      }
+      .join input::-webkit-outer-spin-button,
+      .join input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      .join input:focus-visible,
+      .join select:focus-visible {
+        outline: 0;
+      }
+      .join select {
+        padding-right: 4px;
+        border-left: 1px solid var(--sheet-line);
+        background: #f6f7f8;
+      }
+      .join .suffix {
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        border-left: 1px solid var(--sheet-line);
+        background: #f6f7f8;
+        color: var(--muted);
+      }
+      .join.bad {
+        border-color: var(--error);
+        box-shadow: 0 0 0 1px var(--error);
+      }
+      .join input:disabled {
+        color: var(--muted);
+      }
+      .err {
+        display: flex;
+        gap: 5px;
+        margin: 5px 0 0;
+        font-size: 12px;
+        color: var(--error);
+      }
+      .err .ic {
+        width: 13px;
+        height: 13px;
+        margin-top: 1px;
+      }
+      .swatches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding-top: 6px;
+      }
+      .sw {
+        position: relative;
+        width: 34px;
+        height: 34px;
+      }
+      .sw input {
+        display: block;
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        border: 1px solid rgba(0, 0, 0, 0.4);
+        border-radius: 7px;
+        background: none;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      .sw input::-webkit-color-swatch-wrapper {
+        padding: 0;
+      }
+      .sw input::-webkit-color-swatch {
+        border: 0;
+        border-radius: 6px;
+      }
+      .sw input::-moz-color-swatch {
+        border: 0;
+        border-radius: 6px;
+      }
+      .sw .rm {
+        position: absolute;
+        top: -7px;
+        right: -7px;
+        display: grid;
+        place-items: center;
+        width: 18px;
+        height: 18px;
+        padding: 0;
+        border: 1px solid var(--ink);
+        border-radius: 50%;
+        background: #fff;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .sw .rm .ic {
+        width: 8px;
+        height: 8px;
+      }
+      .add {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        padding: 0;
+        border: 1.5px dashed var(--field-line);
+        border-radius: 7px;
+        background: none;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .add:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+      }
+      .inline {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .inline .lab {
+        margin: 0;
+      }
+      .idlectl {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
+      .seg {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        border: 1px solid var(--field-line);
+        border-radius: 7px;
+        background: var(--field);
+        overflow: hidden;
+      }
+      .seg label {
+        position: relative;
+        display: block;
+        padding: 7px 8px;
+        text-align: center;
+        cursor: pointer;
+      }
+      .seg input {
+        position: absolute;
+        inset: 0;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+      .seg label:has(input:checked) {
+        background: var(--ink);
+        color: #fff;
+      }
+      .seg label:has(input:focus-visible) {
+        outline: 2px solid currentColor;
+        outline-offset: -4px;
+      }
+      input[type='range'] {
+        display: block;
+        width: 100%;
+        height: 22px;
+        margin: 0;
+        background: none;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      input[type='range']::-webkit-slider-runnable-track {
+        height: 6px;
+        border-radius: 3px;
+        background: linear-gradient(
+          to right,
+          var(--ink) var(--fill, 50%),
+          var(--track) var(--fill, 50%)
+        );
+      }
+      input[type='range']::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        margin-top: -6px;
+        border: 2px solid var(--sheet);
+        border-radius: 50%;
+        background: var(--ink);
+        box-shadow: 0 0 0 1px var(--ink);
+      }
+      input[type='range']::-moz-range-track {
+        height: 6px;
+        border-radius: 3px;
+        background: var(--track);
+      }
+      input[type='range']::-moz-range-progress {
+        height: 6px;
+        border-radius: 3px;
+        background: var(--ink);
+      }
+      input[type='range']::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border: 2px solid var(--sheet);
+        border-radius: 50%;
+        background: var(--ink);
+        box-shadow: 0 0 0 1px var(--ink);
+      }
+      input[type='range']:focus-visible {
+        border-radius: 4px;
+      }
+      .note {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--calm-line);
+        border-radius: 7px;
+        background: var(--calm-bg);
+        color: var(--calm-ink);
+        font-size: 12.5px;
+      }
+      .note .ic {
+        width: 16px;
+        height: 16px;
+        margin-top: 1px;
+      }
+      .note strong {
+        display: block;
+      }
+      .note.hot {
+        border-width: 1px 1px 1px 4px;
+        border-color: var(--hot-line);
+        background: var(--hot-bg);
+        color: var(--hot-ink);
+      }
+      .toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .toggle + .toggle {
+        margin-top: 12px;
+      }
+      .toggle label {
+        font-weight: 600;
+      }
+      .toggle .help {
+        margin-top: 0;
+      }
+      .switch {
+        position: relative;
+        flex: none;
+        width: 40px;
+        height: 24px;
+      }
+      .switch input {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+      .switch i {
+        position: absolute;
+        inset: 0;
+        border: 1px solid #8f99a2;
+        border-radius: 12px;
+        background: var(--track);
+        transition: background 0.15s;
+      }
+      .switch i::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+        transition: transform 0.15s;
+      }
+      .switch input:checked + i {
+        border-color: var(--ink);
+        background: var(--ink);
+      }
+      .switch input:checked + i::after {
+        transform: translateX(16px);
+      }
+      .switch input:focus-visible + i {
+        outline: 2px solid var(--ink);
+        outline-offset: 2px;
+      }
+      .switch input:disabled {
+        cursor: not-allowed;
+      }
+      .panel > footer {
+        padding: 12px 20px 14px;
+        border-top: 1px solid var(--sheet-line);
+      }
+      .why {
+        margin: 0 0 10px;
+        font-size: 12px;
+        color: var(--error);
+      }
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+      }
+      .btn {
+        height: 36px;
+        padding: 0 14px;
+        border: 1px solid var(--ink);
+        border-radius: 7px;
+        background: transparent;
+        color: var(--ink);
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .btn.primary {
+        background: var(--ink);
+        color: #fff;
+      }
+      .btn.small {
+        height: 30px;
+        padding: 0 10px;
+        font-size: 13px;
+      }
+      .btn.danger {
+        color: var(--error);
+        border-color: var(--error);
+      }
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .later {
+        position: relative;
+        margin: 6px 0 4px;
+        padding: 14px 12px 12px;
+        border: 1.5px dashed #7d8791;
+        border-radius: 8px;
+      }
+      .toggle + .later {
+        margin-top: 16px;
+      }
+      .later .switch input:disabled + i {
+        opacity: 0.55;
+      }
+      .later .join {
+        background: #e9ebee;
+      }
+      .map dl {
+        position: sticky;
+        top: 24px;
+      }
+      .later + .later {
+        margin-top: 14px;
+      }
+      .later .tag {
+        position: absolute;
+        top: -10px;
+        right: 10px;
+        padding: 0 6px;
+        background: var(--sheet);
+        color: var(--muted);
+        font-size: 11.5px;
+        font-weight: 600;
+      }
+      .preset {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+      }
+      .preset .join {
+        grid-column: 1 / -1;
+      }
+      .preset select {
+        width: 100%;
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        padding: 0 8px;
+        font: inherit;
+      }
+
+      /* ---------- Specimens, notes, table ---------- */
+      .spec-cap {
+        margin-bottom: 10px;
+        font-weight: 650;
+      }
+      .spec-cap span {
+        display: block;
+        font-weight: 400;
+        font-size: 14px;
+        color: var(--muted);
+      }
+      .keys {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 10px 20px;
+        align-items: baseline;
+        margin: 0;
+      }
+      .keys dt {
+        justify-self: start;
+      }
+      .keys dd {
+        margin: 0;
+      }
+      .status {
+        margin-bottom: 20px;
+        font-size: 18px;
+      }
+      .side .demo-note {
+        margin-top: 24px;
+        font-size: 14px;
+        color: var(--muted);
+        max-width: 40ch;
+      }
+      .map {
+        display: grid;
+        grid-template-columns: 380px minmax(0, 1fr);
+        gap: 48px;
+        align-items: start;
+      }
+      .fullpanel {
+        flex: 0 0 380px;
+      }
+      .map dl {
+        margin: 0;
+        max-width: 54ch;
+      }
+      .map dt {
+        margin-top: 20px;
+        font-weight: 650;
+      }
+      .map dt:first-child {
+        margin-top: 0;
+      }
+      .map dd {
+        margin: 2px 0 0;
+        color: var(--muted);
+      }
+      table {
+        width: 100%;
+        max-width: 1000px;
+        border-collapse: collapse;
+        font-variant-numeric: tabular-nums;
+      }
+      th,
+      td {
+        padding: 10px 24px 10px 0;
+        border-bottom: 1px solid var(--rule);
+        text-align: left;
+        vertical-align: top;
+      }
+      thead th {
+        color: var(--muted);
+        font-weight: 600;
+      }
+      tbody th {
+        font-weight: 650;
+        white-space: nowrap;
+      }
+      td.dim {
+        color: var(--muted);
+      }
+      tr.later-row td,
+      tr.later-row th {
+        color: var(--muted);
+      }
+      .chip {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        margin-right: 6px;
+        vertical-align: -1px;
+        border: 1px solid rgba(0, 0, 0, 0.4);
+        border-radius: 3px;
+      }
+      ul.confirm {
+        max-width: 72ch;
+        margin: 0;
+        padding-left: 20px;
+      }
+      ul.confirm li {
+        margin-bottom: 12px;
+        padding-left: 4px;
+      }
+      ul.confirm strong {
+        font-weight: 650;
+      }
+
+      @media (max-width: 1100px) {
+        .hero-row,
+        .map {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .trio {
+          grid-template-columns: minmax(0, 1fr);
+        }
+        .map .panel {
+          max-width: 380px;
+        }
+      }
+      @media (max-width: 820px) {
+        .page {
+          padding: 32px 16px 80px;
+        }
+        .pair {
+          --z: 0.5;
+          grid-template-columns: minmax(0, 1fr);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
+      <symbol id="i-x" viewBox="0 0 12 12">
+        <path
+          d="M2 2l8 8M10 2l-8 8"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+        />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 12 12">
+        <path
+          d="M6 1.5v9M1.5 6h9"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+        />
+      </symbol>
+      <symbol id="i-min" viewBox="0 0 12 12">
+        <path d="M2 6h8" fill="none" stroke="currentColor" stroke-width="1.2" />
+      </symbol>
+      <symbol id="i-max" viewBox="0 0 12 12">
+        <rect
+          x="2"
+          y="2"
+          width="8"
+          height="8"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.2"
+        />
+      </symbol>
+      <symbol id="i-warn" viewBox="0 0 16 16">
+        <path
+          d="M8 1.8l6.6 11.4H1.4z"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M8 6.4v3.2M8 11.4v.1"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+      </symbol>
+      <symbol id="i-gear" viewBox="0 0 16 16">
+        <path
+          d="M6.81 2.84L7.03 1.07L8.97 1.07L9.19 2.84L10.81 3.51L12.21 2.41L13.59 3.79L12.49 5.19L13.16 6.81L14.93 7.03L14.93 8.97L13.16 9.19L12.49 10.81L13.59 12.21L12.21 13.59L10.81 12.49L9.19 13.16L8.97 14.93L7.03 14.93L6.81 13.16L5.19 12.49L3.79 13.59L2.41 12.21L3.51 10.81L2.84 9.19L1.07 8.97L1.07 7.03L2.84 6.81L3.51 5.19L2.41 3.79L3.79 2.41L5.19 3.51Z"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.3"
+          stroke-linejoin="round"
+        />
+        <circle cx="8" cy="8" r="2.1" fill="none" stroke="currentColor" stroke-width="1.3" />
+      </symbol>
+      <symbol id="i-cursor" viewBox="0 0 20 20">
+        <path
+          d="M3 2l12 7.2-5.2 1.2 3 5.6-2.2 1.2-3-5.6L3 15z"
+          fill="currentColor"
+          stroke="#000"
+          stroke-opacity=".5"
+        />
+      </symbol>
+    </svg>
+
+    <main class="page">
+      <!-- ================= Intro and live window ================= -->
+      <section class="plate first">
+        <h1>Blinkr</h1>
+        <p class="intro">
+          A window that flashes a color on an interval. No countdown, no sound, and no clock. This
+          page is a mockup for review: the window below and every settings panel on it are live.
+        </p>
+
+        <div class="hero-row">
+          <figure class="shot live" style="--w: 760; --h: 480">
+            <div class="scroll">
+              <div class="device">
+                <div class="chrome">
+                  <span></span><span class="t">Blinkr</span>
+                  <span class="wc" aria-hidden="true"
+                    ><svg class="ic"><use href="#i-min"></use></svg
+                    ><svg class="ic"><use href="#i-max"></use></svg
+                    ><svg class="ic"><use href="#i-x"></use></svg
+                  ></span>
+                </div>
+                <div
+                  class="win"
+                  id="hero"
+                  style="--w: 760; --h: 480; --idle: #1b1d20"
+                  tabindex="0"
+                  aria-label="Blinkr window. Press Space to start or stop. Press S for settings."
+                >
+                  <div class="flash"></div>
+                  <div class="bar" role="toolbar" aria-label="Window controls">
+                    <button
+                      type="button"
+                      class="bar-btn"
+                      data-bar="toggle"
+                      title="Start (Space)"
+                      aria-keyshortcuts="Space"
+                    >
+                      Start
+                    </button>
+                    <span class="bar-sep" aria-hidden="true"></span>
+                    <button
+                      type="button"
+                      class="bar-btn"
+                      data-bar="settings"
+                      title="Settings (S)"
+                      aria-label="Settings"
+                      aria-keyshortcuts="S"
+                    >
+                      <svg class="ic" aria-hidden="true" focusable="false">
+                        <use href="#i-gear"></use>
+                      </svg>
+                    </button>
+                  </div>
+                  <aside class="panel" role="dialog" aria-label="Settings" inert="">
+                    <header>
+                      <h3>Settings</h3>
+                      <button type="button" class="x" data-act="close" aria-label="Close settings">
+                        <svg class="ic" aria-hidden="true" focusable="false">
+                          <use href="#i-x"></use>
+                        </svg>
+                      </button>
+                    </header>
+                    <div class="body">
+                      <div class="grp">
+                        <div class="row2">
+                          <div class="field">
+                            <div class="lab"><label for="p1-iv">Interval</label></div>
+                            <div class="join" data-join="interval">
+                              <input
+                                id="p1-iv"
+                                data-f="value"
+                                type="number"
+                                step="any"
+                                inputmode="decimal"
+                                value="10"
+                                aria-describedby="p1-iv-err"
+                                aria-invalid="false"
+                              />
+                              <select name="unit" data-f="unit" aria-label="Interval unit">
+                                <option value="seconds">seconds</option>
+                                <option value="minutes" selected="">minutes</option>
+                                <option value="hours">hours</option>
+                              </select>
+                            </div>
+                            <p class="err" id="p1-iv-err" data-err="interval" hidden=""></p>
+                          </div>
+                          <div class="field">
+                            <div class="lab"><label for="p1-du">Flash duration</label></div>
+                            <div class="join" data-join="dur">
+                              <input
+                                id="p1-du"
+                                data-f="dur"
+                                type="number"
+                                step="any"
+                                inputmode="decimal"
+                                value="2"
+                                aria-describedby="p1-du-err"
+                                aria-invalid="false"
+                              />
+                              <span class="suffix">seconds</span>
+                            </div>
+                            <p class="err" id="p1-du-err" data-err="dur" hidden=""></p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="grp">
+                        <div class="field">
+                          <div class="lab">
+                            <span>Colors</span><span class="meta" data-colorcount="">1 of 6</span>
+                          </div>
+                          <div
+                            class="swatches"
+                            data-swatches=""
+                            role="group"
+                            aria-label="Flash colors"
+                          >
+                            <span class="sw"
+                              ><input
+                                type="color"
+                                name="color"
+                                data-f="color"
+                                value="#ffb547"
+                                aria-label="Color 1" /><button
+                                type="button"
+                                class="rm"
+                                data-act="rm"
+                                aria-label="Remove color 1"
+                                hidden=""
+                              >
+                                <svg class="ic" aria-hidden="true" focusable="false">
+                                  <use href="#i-x"></use>
+                                </svg></button></span
+                            ><button
+                              type="button"
+                              class="add"
+                              data-act="add"
+                              aria-label="Add color"
+                            >
+                              <svg class="ic" aria-hidden="true" focusable="false">
+                                <use href="#i-plus"></use>
+                              </svg>
+                            </button>
+                          </div>
+                          <p class="help">
+                            With more than one color, each pulse takes the next color in order.
+                          </p>
+                        </div>
+                        <div class="field inline">
+                          <div class="lab"><span>Idle color</span></div>
+                          <div class="idlectl">
+                            <span data-idlehex="">#1b1d20</span
+                            ><span class="sw"
+                              ><input
+                                type="color"
+                                name="idle"
+                                data-f="idle"
+                                value="#1b1d20"
+                                aria-label="Idle color"
+                            /></span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="grp">
+                        <div class="field">
+                          <div class="lab" id="p1-st">Style</div>
+                          <div class="seg" role="radiogroup" aria-labelledby="p1-st">
+                            <label
+                              ><input
+                                type="radio"
+                                name="p1-style"
+                                value="pulse"
+                                data-f="style"
+                                checked=""
+                              />Smooth pulse</label
+                            >
+                            <label
+                              ><input
+                                type="radio"
+                                name="p1-style"
+                                value="blink"
+                                data-f="style"
+                              />Hard blink</label
+                            >
+                          </div>
+                        </div>
+                        <div class="field">
+                          <div class="lab">
+                            <label for="p1-in">Intensity</label
+                            ><output data-out="intensity" for="p1-in">60%</output>
+                          </div>
+                          <input
+                            id="p1-in"
+                            type="range"
+                            min="10"
+                            max="100"
+                            step="5"
+                            value="60"
+                            data-f="intensity"
+                            aria-describedby="p1-warn"
+                            style="--fill: 55.55555555555556%"
+                          />
+                          <p class="help">Peak brightness of the flash over the idle color.</p>
+                          <div class="note" id="p1-warn" data-note="" role="status">
+                            <svg class="ic" aria-hidden="true" focusable="false">
+                              <use href="#i-warn"></use>
+                            </svg>
+                            <div>
+                              Flashing can trigger seizures in people with photosensitive epilepsy.
+                              Stop if anyone feels unwell.
+                            </div>
+                          </div>
+                        </div>
+                        <div class="field">
+                          <div class="lab">
+                            <label for="p1-ra">Rate</label
+                            ><output data-out="rate" for="p1-ra">1 per second</output>
+                          </div>
+                          <input
+                            id="p1-ra"
+                            type="range"
+                            min="0.25"
+                            max="3"
+                            step="0.25"
+                            value="1"
+                            data-f="rate"
+                            style="--fill: 27.27272727272727%"
+                          />
+                          <p class="help">Pulses or blinks per second during a flash.</p>
+                        </div>
+                      </div>
+                      <div class="grp">
+                        <div class="toggle">
+                          <div>
+                            <label for="ot2">Always on top</label>
+                            <p class="help">Keeps the window above other windows.</p>
+                          </div>
+                          <span class="switch"
+                            ><input id="ot2" type="checkbox" role="switch" data-f="onTop" /><i></i
+                          ></span>
+                        </div>
+                      </div>
+                    </div>
+                    <footer>
+                      <p class="why" data-why="" hidden="">Fix the highlighted fields to start.</p>
+                      <div class="actions">
+                        <button type="button" class="btn" data-act="preview">Preview flash</button>
+                        <button type="button" class="btn primary" data-act="start">Start</button>
+                      </div>
+                    </footer>
+                  </aside>
+                  <div class="menu" role="menu" aria-label="Window menu" hidden="">
+                    <button type="button" role="menuitem" data-m="settings">
+                      Settings <kbd>S</kbd>
+                    </button>
+                    <button type="button" role="menuitem" data-m="toggle">
+                      Start <kbd>Space</kbd>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <figcaption>
+              <div class="name">Live window <span class="size">760 × 480, resizable</span></div>
+              <p class="desc">The default window. Try everything on the right.</p>
+            </figcaption>
+          </figure>
+
+          <div class="side">
+            <p class="status" id="status" aria-live="polite"><strong>Stopped.</strong></p>
+            <dl class="keys">
+              <dt>Start, Stop</dt>
+              <dd>The buttons in the bar</dd>
+              <dt>Gear</dt>
+              <dd>Open settings</dd>
+              <dt>Right-click</dt>
+              <dd>Open a menu with Settings and Start</dd>
+              <dt><kbd>S</kbd></dt>
+              <dd>Open settings</dd>
+              <dt><kbd>Space</kbd></dt>
+              <dd>Start or stop</dd>
+              <dt><kbd>Esc</kbd></dt>
+              <dd>Close settings or the menu</dd>
+            </dl>
+            <p class="demo-note">
+              While running, the window is blank. Move the pointer over it, click it, or press Tab
+              to show the bar. It fades after about 2 seconds, when the pointer leaves, and never
+              while one of its buttons has keyboard focus. This demo flashes every 5 seconds so you
+              can see it work. The real app flashes on your interval and never shows a countdown.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= Window states ================= -->
+      <section class="plate" id="states">
+        <h2>Window states</h2>
+        <p class="lede">
+          The window never shows the time left, a clock, or a countdown. The only thing on it is a
+          small control bar, and only when there is something to press.
+        </p>
+        <div class="pair">
+          <figure class="shot" style="--w: 760; --h: 480">
+            <div class="device">
+              <div class="chrome">
+                <span></span><span class="t">Blinkr</span>
+                <span class="wc" aria-hidden="true"
+                  ><svg class="ic"><use href="#i-min"></use></svg
+                  ><svg class="ic"><use href="#i-max"></use></svg
+                  ><svg class="ic"><use href="#i-x"></use></svg
+                ></span>
+              </div>
+              <div class="win" style="--h: 480">
+                <div class="bar" inert>
+                  <button
+                    type="button"
+                    class="bar-btn"
+                    data-bar="toggle"
+                    title="Start (Space)"
+                    aria-keyshortcuts="Space"
+                  >
+                    Start
+                  </button>
+                  <span class="bar-sep" aria-hidden="true"></span>
+                  <button
+                    type="button"
+                    class="bar-btn"
+                    data-bar="settings"
+                    title="Settings (S)"
+                    aria-label="Settings"
+                    aria-keyshortcuts="S"
+                  >
+                    <svg class="ic" aria-hidden="true" focusable="false">
+                      <use href="#i-gear"></use>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <figcaption>
+              <div class="name">Stopped <span class="size">760 × 480</span></div>
+              <p class="desc">
+                A small bar at the bottom centre with Start and a settings gear. It stays on screen
+                while stopped.
+              </p>
+            </figcaption>
+          </figure>
+          <figure class="shot" style="--w: 760; --h: 480">
+            <div class="device">
+              <div class="chrome">
+                <span></span><span class="t">Blinkr</span>
+                <span class="wc" aria-hidden="true"
+                  ><svg class="ic"><use href="#i-min"></use></svg
+                  ><svg class="ic"><use href="#i-max"></use></svg
+                  ><svg class="ic"><use href="#i-x"></use></svg
+                ></span>
+              </div>
+              <div class="win" style="--h: 480"></div>
+            </div>
+            <figcaption>
+              <div class="name">Running, idle <span class="size">760 × 480</span></div>
+              <p class="desc">
+                Completely blank, in the idle color. Nothing shows how long until the next flash.
+              </p>
+            </figcaption>
+          </figure>
+          <figure class="shot" style="--w: 760; --h: 480">
+            <div class="device">
+              <div class="chrome">
+                <span></span><span class="t">Blinkr</span>
+                <span class="wc" aria-hidden="true"
+                  ><svg class="ic"><use href="#i-min"></use></svg
+                  ><svg class="ic"><use href="#i-max"></use></svg
+                  ><svg class="ic"><use href="#i-x"></use></svg
+                ></span>
+              </div>
+              <div class="win" style="--h: 480">
+                <svg class="cursor" style="left: 520px; top: 250px"><use href="#i-cursor" /></svg>
+                <div class="bar" inert>
+                  <button
+                    type="button"
+                    class="bar-btn"
+                    data-bar="toggle"
+                    title="Stop (Space)"
+                    aria-keyshortcuts="Space"
+                  >
+                    Stop
+                  </button>
+                  <span class="bar-sep" aria-hidden="true"></span>
+                  <button
+                    type="button"
+                    class="bar-btn"
+                    data-bar="settings"
+                    title="Settings (S)"
+                    aria-label="Settings"
+                    aria-keyshortcuts="S"
+                  >
+                    <svg class="ic" aria-hidden="true" focusable="false">
+                      <use href="#i-gear"></use>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <figcaption>
+              <div class="name">Running, bar revealed <span class="size">760 × 480</span></div>
+              <p class="desc">
+                The same bar with Stop in place of Start, after the pointer moves over the window.
+                It still shows no time.
+              </p>
+            </figcaption>
+          </figure>
+          <div>
+            <dl class="keys" style="margin-top: 8px">
+              <dt>Shows</dt>
+              <dd>Pointer moves over the window, a click on the window, or Tab</dd>
+              <dt>Fades</dt>
+              <dd>About 2 seconds after the pointer stops, or when it leaves the window</dd>
+              <dt>Stays</dt>
+              <dd>Whenever one of its buttons has keyboard focus</dd>
+              <dt>Hidden</dt>
+              <dd>While the settings panel is open</dd>
+            </dl>
+            <p class="muted" style="margin-top: 20px; max-width: 46ch; font-size: 15px">
+              With reduced motion on, the bar appears and disappears without fading. A click on the
+              empty window while running only shows the bar.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= Reaching settings ================= -->
+      <section class="plate" id="reach">
+        <h2>Reaching settings</h2>
+        <p class="lede">
+          Four ways in. The gear is always in the bar. Space starts and stops. Escape or the close
+          button closes settings.
+        </p>
+        <div class="pair">
+          <figure class="shot" style="--w: 760; --h: 480">
+            <div class="device">
+              <div class="chrome">
+                <span></span><span class="t">Blinkr</span>
+                <span class="wc" aria-hidden="true"
+                  ><svg class="ic"><use href="#i-min"></use></svg
+                  ><svg class="ic"><use href="#i-max"></use></svg
+                  ><svg class="ic"><use href="#i-x"></use></svg
+                ></span>
+              </div>
+              <div class="win" style="--h: 480">
+                <div class="bar" inert>
+                  <button
+                    type="button"
+                    class="bar-btn"
+                    data-bar="toggle"
+                    title="Start (Space)"
+                    aria-keyshortcuts="Space"
+                  >
+                    Start
+                  </button>
+                  <span class="bar-sep" aria-hidden="true"></span>
+                  <button
+                    type="button"
+                    class="bar-btn"
+                    data-bar="settings"
+                    title="Settings (S)"
+                    aria-label="Settings"
+                    aria-keyshortcuts="S"
+                  >
+                    <svg class="ic" aria-hidden="true" focusable="false">
+                      <use href="#i-gear"></use>
+                    </svg>
+                  </button>
+                </div>
+                <div class="tip" style="left: 414px; bottom: 74px">Settings (S)</div>
+                <div class="ring" style="left: 414px; top: 435px"></div>
+                <svg class="cursor" style="left: 408px; top: 427px"><use href="#i-cursor" /></svg>
+              </div>
+            </div>
+            <figcaption>
+              <div class="name">Gear button <span class="size">760 × 480</span></div>
+              <p class="desc">
+                Click the gear. Hovering it shows a tooltip with the shortcut. Start and Stop carry
+                tooltips too.
+              </p>
+            </figcaption>
+          </figure>
+          <figure class="shot" style="--w: 760; --h: 480">
+            <div class="device">
+              <div class="chrome">
+                <span></span><span class="t">Blinkr</span>
+                <span class="wc" aria-hidden="true"
+                  ><svg class="ic"><use href="#i-min"></use></svg
+                  ><svg class="ic"><use href="#i-max"></use></svg
+                  ><svg class="ic"><use href="#i-x"></use></svg
+                ></span>
+              </div>
+              <div class="win" style="--h: 480">
+                <svg class="cursor" style="left: 300px; top: 150px"><use href="#i-cursor" /></svg>
+                <div class="menu" style="left: 312px; top: 164px">
+                  <button type="button" class="on">Settings <kbd>S</kbd></button>
+                  <button type="button">Start <kbd>Space</kbd></button>
+                </div>
+                <div class="bar" inert>
+                  <button
+                    type="button"
+                    class="bar-btn"
+                    data-bar="toggle"
+                    title="Start (Space)"
+                    aria-keyshortcuts="Space"
+                  >
+                    Start
+                  </button>
+                  <span class="bar-sep" aria-hidden="true"></span>
+                  <button
+                    type="button"
+                    class="bar-btn"
+                    data-bar="settings"
+                    title="Settings (S)"
+                    aria-label="Settings"
+                    aria-keyshortcuts="S"
+                  >
+                    <svg class="ic" aria-hidden="true" focusable="false">
+                      <use href="#i-gear"></use>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <figcaption>
+              <div class="name">Right-click menu <span class="size">760 × 480</span></div>
+              <p class="desc">
+                A short menu at the pointer. It says Stop instead of Start while running.
+              </p>
+            </figcaption>
+          </figure>
+          <figure class="shot" style="--w: 760; --h: 480">
+            <div class="device">
+              <div class="chrome">
+                <span></span><span class="t">Blinkr</span>
+                <span class="wc" aria-hidden="true"
+                  ><svg class="ic"><use href="#i-min"></use></svg
+                  ><svg class="ic"><use href="#i-max"></use></svg
+                  ><svg class="ic"><use href="#i-x"></use></svg
+                ></span>
+              </div>
+              <div class="win" style="--h: 480">
+                <div class="keycap" style="left: 344px; top: 190px">S</div>
+                <div class="bar" inert>
+                  <button
+                    type="button"
+                    class="bar-btn"
+                    data-bar="toggle"
+                    title="Start (Space)"
+                    aria-keyshortcuts="Space"
+                  >
+                    Start
+                  </button>
+                  <span class="bar-sep" aria-hidden="true"></span>
+                  <button
+                    type="button"
+                    class="bar-btn"
+                    data-bar="settings"
+                    title="Settings (S)"
+                    aria-label="Settings"
+                    aria-keyshortcuts="S"
+                  >
+                    <svg class="ic" aria-hidden="true" focusable="false">
+                      <use href="#i-gear"></use>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <figcaption>
+              <div class="name">S key <span class="size">760 × 480</span></div>
+              <p class="desc">
+                With the window focused, S opens settings. It is ignored while typing in a field.
+              </p>
+            </figcaption>
+          </figure>
+          <figure class="shot" style="--w: 760; --h: 480">
+            <div class="device">
+              <div class="chrome">
+                <span></span><span class="t">Blinkr</span>
+                <span class="wc" aria-hidden="true"
+                  ><svg class="ic"><use href="#i-min"></use></svg
+                  ><svg class="ic"><use href="#i-max"></use></svg
+                  ><svg class="ic"><use href="#i-x"></use></svg
+                ></span>
+              </div>
+              <div class="win" style="--h: 480">
+                <svg class="cursor" style="left: 540px; top: 300px"><use href="#i-cursor" /></svg>
+                <div class="tip" style="left: 414px; bottom: 74px">Settings (S)</div>
+                <div class="bar" inert>
+                  <button
+                    type="button"
+                    class="bar-btn"
+                    data-bar="toggle"
+                    title="Stop (Space)"
+                    aria-keyshortcuts="Space"
+                  >
+                    Stop
+                  </button>
+                  <span class="bar-sep" aria-hidden="true"></span>
+                  <button
+                    type="button"
+                    class="bar-btn"
+                    data-bar="settings"
+                    title="Settings (S)"
+                    aria-label="Settings"
+                    aria-keyshortcuts="S"
+                  >
+                    <svg class="ic" aria-hidden="true" focusable="false">
+                      <use href="#i-gear"></use>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <figcaption>
+              <div class="name">While running <span class="size">760 × 480</span></div>
+              <p class="desc">
+                Move the pointer to bring the bar back, then use the gear. A click on the empty
+                window only shows the bar.
+              </p>
+            </figcaption>
+          </figure>
+        </div>
+        <dl class="keys" style="margin-top: 40px">
+          <dt>Gear</dt>
+          <dd>Open settings</dd>
+          <dt><kbd>Space</kbd></dt>
+          <dd>Start or stop the timer</dd>
+          <dt><kbd>S</kbd></dt>
+          <dd>Open settings</dd>
+          <dt><kbd>Esc</kbd></dt>
+          <dd>Close the menu, or close settings</dd>
+          <dt>Close button</dt>
+          <dd>Close settings</dd>
+        </dl>
+        <p class="muted" style="margin-top: 20px; max-width: 46ch; font-size: 15px">
+          Clicking the empty window never opens settings. Clicking it while settings are open does
+          nothing. Only Escape or the close button closes them.
+        </p>
+      </section>
+
+      <!-- ================= Flash states ================= -->
+      <section class="plate" id="flash">
+        <h2>Flash states</h2>
+        <p class="lede">
+          A flash fills the whole window with the flash color over the idle color. Intensity sets
+          the peak opacity and rate sets the period. Each frame shows the peak. Play shows the
+          motion once.
+        </p>
+        <div class="pair">
+          <figure
+            class="shot demo"
+            style="--w: 760; --h: 480"
+            data-state='{"style":"pulse","intensity":60,"rate":1,"dur":2,"colors":["#ffb547"]}'
+          >
+            <div class="device">
+              <div class="chrome">
+                <span></span><span class="t">Blinkr</span>
+                <span class="wc" aria-hidden="true"
+                  ><svg class="ic"><use href="#i-min"></use></svg
+                  ><svg class="ic"><use href="#i-max"></use></svg
+                  ><svg class="ic"><use href="#i-x"></use></svg
+                ></span>
+              </div>
+              <div class="win" style="--h: 480">
+                <div
+                  class="flash hold"
+                  data-style="pulse"
+                  style="
+                    --peak: 0.6;
+                    --period: 1s;
+                    --count: 2;
+                    --c1: #ffb547;
+                    --cur: #ffb547;
+                    --cycle: 1s;
+                    --shift: 0s;
+                    --hues: none;
+                    --shape: pulse;
+                  "
+                ></div>
+              </div>
+            </div>
+            <svg
+              class="trace"
+              data-trace
+              viewBox="0 0 600 72"
+              role="img"
+              aria-label="Opacity over time. Peak 60%, 2 pulses of 1 s, 2 s in all."
+            >
+              <line x1="8" x2="592" y1="6" y2="6" stroke="#7d8791" stroke-dasharray="3 4"></line>
+              <path
+                d="M8.0,62.0 L20.2,61.4 L32.3,59.7 L44.5,57.1 L56.7,53.6 L68.8,49.5 L81.0,45.2 L93.2,40.9 L105.3,36.8 L117.5,33.3 L129.7,30.7 L141.8,29.0 L154.0,28.4 L166.2,29.0 L178.3,30.7 L190.5,33.3 L202.7,36.8 L214.8,40.9 L227.0,45.2 L239.2,49.5 L251.3,53.6 L263.5,57.1 L275.7,59.7 L287.8,61.4 L300.0,62.0 Z"
+                fill="#ffb547"
+                stroke="#1f2529"
+                stroke-width="1.25"
+                stroke-linejoin="round"
+              ></path>
+              <path
+                d="M300.0,62.0 L312.2,61.4 L324.3,59.7 L336.5,57.1 L348.7,53.6 L360.8,49.5 L373.0,45.2 L385.2,40.9 L397.3,36.8 L409.5,33.3 L421.7,30.7 L433.8,29.0 L446.0,28.4 L458.2,29.0 L470.3,30.7 L482.5,33.3 L494.7,36.8 L506.8,40.9 L519.0,45.2 L531.2,49.5 L543.3,53.6 L555.5,57.1 L567.7,59.7 L579.8,61.4 L592.0,62.0 Z"
+                fill="#ffb547"
+                stroke="#1f2529"
+                stroke-width="1.25"
+                stroke-linejoin="round"
+              ></path>
+              <line x1="8" x2="592" y1="62" y2="62" stroke="#1f2529" stroke-width="1.25"></line>
+            </svg>
+            <figcaption>
+              <div class="name">Smooth pulse, the default <span class="size">760 × 480</span></div>
+              <p class="desc">Each pulse fades in to the peak and back out.</p>
+              <p class="line" data-line>Peak 60%, 2 pulses of 1 s, 2 s in all</p>
+              <p style="margin-top: 10px">
+                <button type="button" class="btn small" data-play>Play flash</button>
+              </p>
+            </figcaption>
+          </figure>
+          <figure
+            class="shot demo"
+            style="--w: 760; --h: 480"
+            data-state='{"style":"blink","intensity":50,"rate":1,"dur":2,"colors":["#ffb547"]}'
+          >
+            <div class="device">
+              <div class="chrome">
+                <span></span><span class="t">Blinkr</span>
+                <span class="wc" aria-hidden="true"
+                  ><svg class="ic"><use href="#i-min"></use></svg
+                  ><svg class="ic"><use href="#i-max"></use></svg
+                  ><svg class="ic"><use href="#i-x"></use></svg
+                ></span>
+              </div>
+              <div class="win" style="--h: 480">
+                <div
+                  class="flash hold"
+                  data-style="blink"
+                  style="
+                    --peak: 0.5;
+                    --period: 1s;
+                    --count: 2;
+                    --c1: #ffb547;
+                    --cur: #ffb547;
+                    --cycle: 1s;
+                    --shift: 0s;
+                    --hues: none;
+                    --shape: blink;
+                  "
+                ></div>
+              </div>
+            </div>
+            <svg
+              class="trace"
+              data-trace
+              viewBox="0 0 600 72"
+              role="img"
+              aria-label="Opacity over time. Peak 50%, 2 blinks of 1 s, 2 s in all."
+            >
+              <line x1="8" x2="592" y1="6" y2="6" stroke="#7d8791" stroke-dasharray="3 4"></line>
+              <path
+                d="M8,62 V34 H154 V62 Z"
+                fill="#ffb547"
+                stroke="#1f2529"
+                stroke-width="1.25"
+                stroke-linejoin="round"
+              ></path>
+              <path
+                d="M300,62 V34 H446 V62 Z"
+                fill="#ffb547"
+                stroke="#1f2529"
+                stroke-width="1.25"
+                stroke-linejoin="round"
+              ></path>
+              <line x1="8" x2="592" y1="62" y2="62" stroke="#1f2529" stroke-width="1.25"></line>
+            </svg>
+            <figcaption>
+              <div class="name">Hard blink <span class="size">760 × 480</span></div>
+              <p class="desc">Fully on for the first half of each period, then off. No fade.</p>
+              <p class="line" data-line>Peak 50%, 2 blinks of 1 s, 2 s in all</p>
+              <p style="margin-top: 10px">
+                <button type="button" class="btn small" data-play>Play flash</button>
+              </p>
+            </figcaption>
+          </figure>
+          <figure
+            class="shot demo"
+            style="--w: 760; --h: 480"
+            data-state='{"style":"pulse","intensity":60,"rate":1.5,"dur":2,"colors":["#ffb547","#46c2cb","#ff6f91"]}'
+          >
+            <div class="device">
+              <div class="chrome">
+                <span></span><span class="t">Blinkr</span>
+                <span class="wc" aria-hidden="true"
+                  ><svg class="ic"><use href="#i-min"></use></svg
+                  ><svg class="ic"><use href="#i-max"></use></svg
+                  ><svg class="ic"><use href="#i-x"></use></svg
+                ></span>
+              </div>
+              <div class="win" style="--h: 480">
+                <div
+                  class="flash hold"
+                  data-style="pulse"
+                  style="
+                    --peak: 0.6;
+                    --period: 0.6666666666666666s;
+                    --count: 3;
+                    --c1: #ffb547;
+                    --c2: #46c2cb;
+                    --c3: #ff6f91;
+                    --cur: #ffb547;
+                    --cycle: 2s;
+                    --shift: 0s;
+                    --hues: hue3;
+                    --shape: pulse;
+                  "
+                ></div>
+              </div>
+            </div>
+            <svg
+              class="trace"
+              data-trace
+              viewBox="0 0 600 72"
+              role="img"
+              aria-label="Opacity over time. Peak 60%, 3 pulses of 0.67 s, 2 s in all."
+            >
+              <line x1="8" x2="592" y1="6" y2="6" stroke="#7d8791" stroke-dasharray="3 4"></line>
+              <path
+                d="M8.0,62.0 L16.1,61.4 L24.2,59.7 L32.3,57.1 L40.4,53.6 L48.6,49.5 L56.7,45.2 L64.8,40.9 L72.9,36.8 L81.0,33.3 L89.1,30.7 L97.2,29.0 L105.3,28.4 L113.4,29.0 L121.6,30.7 L129.7,33.3 L137.8,36.8 L145.9,40.9 L154.0,45.2 L162.1,49.5 L170.2,53.6 L178.3,57.1 L186.4,59.7 L194.6,61.4 L202.7,62.0 Z"
+                fill="#ffb547"
+                stroke="#1f2529"
+                stroke-width="1.25"
+                stroke-linejoin="round"
+              ></path>
+              <path
+                d="M202.7,62.0 L210.8,61.4 L218.9,59.7 L227.0,57.1 L235.1,53.6 L243.2,49.5 L251.3,45.2 L259.4,40.9 L267.6,36.8 L275.7,33.3 L283.8,30.7 L291.9,29.0 L300.0,28.4 L308.1,29.0 L316.2,30.7 L324.3,33.3 L332.4,36.8 L340.6,40.9 L348.7,45.2 L356.8,49.5 L364.9,53.6 L373.0,57.1 L381.1,59.7 L389.2,61.4 L397.3,62.0 Z"
+                fill="#46c2cb"
+                stroke="#1f2529"
+                stroke-width="1.25"
+                stroke-linejoin="round"
+              ></path>
+              <path
+                d="M397.3,62.0 L405.4,61.4 L413.6,59.7 L421.7,57.1 L429.8,53.6 L437.9,49.5 L446.0,45.2 L454.1,40.9 L462.2,36.8 L470.3,33.3 L478.4,30.7 L486.6,29.0 L494.7,28.4 L502.8,29.0 L510.9,30.7 L519.0,33.3 L527.1,36.8 L535.2,40.9 L543.3,45.2 L551.4,49.5 L559.6,53.6 L567.7,57.1 L575.8,59.7 L583.9,61.4 L592.0,62.0 Z"
+                fill="#ff6f91"
+                stroke="#1f2529"
+                stroke-width="1.25"
+                stroke-linejoin="round"
+              ></path>
+              <line x1="8" x2="592" y1="62" y2="62" stroke="#1f2529" stroke-width="1.25"></line>
+            </svg>
+            <figcaption>
+              <div class="name">Several colors <span class="size">760 × 480</span></div>
+              <p class="desc">
+                Each pulse takes the next color in order. The order carries on into the next flash.
+              </p>
+              <p class="line" data-line>Peak 60%, 3 pulses of 0.67 s, 2 s in all</p>
+              <p style="margin-top: 10px">
+                <button type="button" class="btn small" data-play>Play flash</button>
+              </p>
+            </figcaption>
+          </figure>
+          <figure
+            class="shot demo reduced"
+            class="shot demo"
+            style="--w: 760; --h: 480"
+            data-reduced
+            data-state='{"style":"pulse","intensity":60,"rate":1,"dur":2,"colors":["#ffb547"]}'
+          >
+            <div class="device">
+              <div class="chrome">
+                <span></span><span class="t">Blinkr</span>
+                <span class="wc" aria-hidden="true"
+                  ><svg class="ic"><use href="#i-min"></use></svg
+                  ><svg class="ic"><use href="#i-max"></use></svg
+                  ><svg class="ic"><use href="#i-x"></use></svg
+                ></span>
+              </div>
+              <div class="win" style="--h: 480">
+                <div
+                  class="flash hold"
+                  data-style="pulse"
+                  style="
+                    --peak: 0.6;
+                    --period: 1s;
+                    --count: 2;
+                    --c1: #ffb547;
+                    --cur: #ffb547;
+                    --cycle: 1s;
+                    --shift: 0s;
+                    --hues: none;
+                    --shape: pulse;
+                  "
+                ></div>
+              </div>
+            </div>
+            <svg
+              class="trace"
+              data-trace
+              viewBox="0 0 600 72"
+              role="img"
+              aria-label="Opacity over time. Steady at 60% for 2 s."
+            >
+              <line x1="8" x2="592" y1="6" y2="6" stroke="#7d8791" stroke-dasharray="3 4"></line>
+              <path
+                d="M8,62 V28.4 H592 V62 Z"
+                fill="#ffb547"
+                stroke="#1f2529"
+                stroke-width="1.25"
+                stroke-linejoin="round"
+              ></path>
+              <line x1="8" x2="592" y1="62" y2="62" stroke="#1f2529" stroke-width="1.25"></line>
+            </svg>
+            <figcaption>
+              <div class="name">Reduced motion <span class="size">760 × 480</span></div>
+              <p class="desc">
+                When the system asks for reduced motion, the flash holds steady at the peak for its
+                whole duration instead of oscillating.
+              </p>
+              <p class="line" data-line>Steady at 60% for 2 s</p>
+              <p style="margin-top: 10px">
+                <button type="button" class="btn small" data-play>Play flash</button>
+              </p>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ================= Settings panel ================= -->
+      <section class="plate" id="panel">
+        <h2>Settings panel</h2>
+        <p class="lede">
+          A panel slides in from the right and leaves the left of the window visible, so Preview
+          flash can be judged. Start hides the panel. In a short window the controls scroll and the
+          two buttons stay pinned at the bottom. Every control below is live.
+        </p>
+        <div class="stack">
+          <div class="split">
+            <figure class="shot live" style="--w: 760; --h: 480">
+              <div class="scroll">
+                <div class="device">
+                  <div class="chrome">
+                    <span></span><span class="t">Blinkr</span>
+                    <span class="wc" aria-hidden="true"
+                      ><svg class="ic"><use href="#i-min"></use></svg
+                      ><svg class="ic"><use href="#i-max"></use></svg
+                      ><svg class="ic"><use href="#i-x"></use></svg
+                    ></span>
+                  </div>
+                  <div
+                    class="win"
+                    data-live
+                    data-open
+                    style="--h: 480; --idle: #1b1d20"
+                    tabindex="0"
+                    aria-label="Blinkr window. Press Space to start or stop. Press S for settings."
+                  >
+                    <div class="flash"></div>
+                    <div class="bar" role="toolbar" aria-label="Window controls" hidden="">
+                      <button
+                        type="button"
+                        class="bar-btn"
+                        data-bar="toggle"
+                        title="Start (Space)"
+                        aria-keyshortcuts="Space"
+                      >
+                        Start
+                      </button>
+                      <span class="bar-sep" aria-hidden="true"></span>
+                      <button
+                        type="button"
+                        class="bar-btn"
+                        data-bar="settings"
+                        title="Settings (S)"
+                        aria-label="Settings"
+                        aria-keyshortcuts="S"
+                      >
+                        <svg class="ic" aria-hidden="true" focusable="false">
+                          <use href="#i-gear"></use>
+                        </svg>
+                      </button>
+                    </div>
+                    <aside class="panel open" role="dialog" aria-label="Settings">
+                      <header>
+                        <h3>Settings</h3>
+                        <button
+                          type="button"
+                          class="x"
+                          data-act="close"
+                          aria-label="Close settings"
+                        >
+                          <svg class="ic" aria-hidden="true" focusable="false">
+                            <use href="#i-x"></use>
+                          </svg>
+                        </button>
+                      </header>
+                      <div class="body">
+                        <div class="grp">
+                          <div class="row2">
+                            <div class="field">
+                              <div class="lab"><label for="p3-iv">Interval</label></div>
+                              <div class="join" data-join="interval">
+                                <input
+                                  id="p3-iv"
+                                  data-f="value"
+                                  type="number"
+                                  step="any"
+                                  inputmode="decimal"
+                                  value="10"
+                                  aria-describedby="p3-iv-err"
+                                  aria-invalid="false"
+                                />
+                                <select name="unit" data-f="unit" aria-label="Interval unit">
+                                  <option value="seconds">seconds</option>
+                                  <option value="minutes" selected="">minutes</option>
+                                  <option value="hours">hours</option>
+                                </select>
+                              </div>
+                              <p class="err" id="p3-iv-err" data-err="interval" hidden=""></p>
+                            </div>
+                            <div class="field">
+                              <div class="lab"><label for="p3-du">Flash duration</label></div>
+                              <div class="join" data-join="dur">
+                                <input
+                                  id="p3-du"
+                                  data-f="dur"
+                                  type="number"
+                                  step="any"
+                                  inputmode="decimal"
+                                  value="2"
+                                  aria-describedby="p3-du-err"
+                                  aria-invalid="false"
+                                />
+                                <span class="suffix">seconds</span>
+                              </div>
+                              <p class="err" id="p3-du-err" data-err="dur" hidden=""></p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grp">
+                          <div class="field">
+                            <div class="lab">
+                              <span>Colors</span><span class="meta" data-colorcount="">1 of 6</span>
+                            </div>
+                            <div
+                              class="swatches"
+                              data-swatches=""
+                              role="group"
+                              aria-label="Flash colors"
+                            >
+                              <span class="sw"
+                                ><input
+                                  type="color"
+                                  name="color"
+                                  data-f="color"
+                                  value="#ffb547"
+                                  aria-label="Color 1" /><button
+                                  type="button"
+                                  class="rm"
+                                  data-act="rm"
+                                  aria-label="Remove color 1"
+                                  hidden=""
+                                >
+                                  <svg class="ic" aria-hidden="true" focusable="false">
+                                    <use href="#i-x"></use>
+                                  </svg></button></span
+                              ><button
+                                type="button"
+                                class="add"
+                                data-act="add"
+                                aria-label="Add color"
+                              >
+                                <svg class="ic" aria-hidden="true" focusable="false">
+                                  <use href="#i-plus"></use>
+                                </svg>
+                              </button>
+                            </div>
+                            <p class="help">
+                              With more than one color, each pulse takes the next color in order.
+                            </p>
+                          </div>
+                          <div class="field inline">
+                            <div class="lab"><span>Idle color</span></div>
+                            <div class="idlectl">
+                              <span data-idlehex="">#1b1d20</span
+                              ><span class="sw"
+                                ><input
+                                  type="color"
+                                  name="idle"
+                                  data-f="idle"
+                                  value="#1b1d20"
+                                  aria-label="Idle color"
+                              /></span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grp">
+                          <div class="field">
+                            <div class="lab" id="p3-st">Style</div>
+                            <div class="seg" role="radiogroup" aria-labelledby="p3-st">
+                              <label
+                                ><input
+                                  type="radio"
+                                  name="p3-style"
+                                  value="pulse"
+                                  data-f="style"
+                                  checked=""
+                                />Smooth pulse</label
+                              >
+                              <label
+                                ><input
+                                  type="radio"
+                                  name="p3-style"
+                                  value="blink"
+                                  data-f="style"
+                                />Hard blink</label
+                              >
+                            </div>
+                          </div>
+                          <div class="field">
+                            <div class="lab">
+                              <label for="p3-in">Intensity</label
+                              ><output data-out="intensity" for="p3-in">60%</output>
+                            </div>
+                            <input
+                              id="p3-in"
+                              type="range"
+                              min="10"
+                              max="100"
+                              step="5"
+                              value="60"
+                              data-f="intensity"
+                              aria-describedby="p3-warn"
+                              style="--fill: 55.55555555555556%"
+                            />
+                            <p class="help">Peak brightness of the flash over the idle color.</p>
+                            <div class="note" id="p3-warn" data-note="" role="status">
+                              <svg class="ic" aria-hidden="true" focusable="false">
+                                <use href="#i-warn"></use>
+                              </svg>
+                              <div>
+                                Flashing can trigger seizures in people with photosensitive
+                                epilepsy. Stop if anyone feels unwell.
+                              </div>
+                            </div>
+                          </div>
+                          <div class="field">
+                            <div class="lab">
+                              <label for="p3-ra">Rate</label
+                              ><output data-out="rate" for="p3-ra">1 per second</output>
+                            </div>
+                            <input
+                              id="p3-ra"
+                              type="range"
+                              min="0.25"
+                              max="3"
+                              step="0.25"
+                              value="1"
+                              data-f="rate"
+                              style="--fill: 27.27272727272727%"
+                            />
+                            <p class="help">Pulses or blinks per second during a flash.</p>
+                          </div>
+                        </div>
+                        <div class="grp">
+                          <div class="toggle">
+                            <div>
+                              <label for="ot4">Always on top</label>
+                              <p class="help">Keeps the window above other windows.</p>
+                            </div>
+                            <span class="switch"
+                              ><input id="ot4" type="checkbox" role="switch" data-f="onTop" /><i></i
+                            ></span>
+                          </div>
+                        </div>
+                      </div>
+                      <footer>
+                        <p class="why" data-why="" hidden="">
+                          Fix the highlighted fields to start.
+                        </p>
+                        <div class="actions">
+                          <button type="button" class="btn" data-act="preview">
+                            Preview flash
+                          </button>
+                          <button type="button" class="btn primary" data-act="start">Start</button>
+                        </div>
+                      </footer>
+                    </aside>
+                    <div class="menu" role="menu" aria-label="Window menu" hidden="">
+                      <button type="button" role="menuitem" data-m="settings">
+                        Settings <kbd>S</kbd>
+                      </button>
+                      <button type="button" role="menuitem" data-m="toggle">
+                        Start <kbd>Space</kbd>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <figcaption>
+                <div class="name">Settings open, defaults <span class="size">760 × 480</span></div>
+                <p class="desc">
+                  Style, intensity, and rate change the next flash. Preview flash plays one in the
+                  window. Start hides the panel and begins running.
+                </p>
+              </figcaption>
+            </figure>
+            <div class="fullpanel">
+              <p class="spec-cap">
+                Whole panel<span
+                  >The same controls without the scroll. The 480 pixel window shows them in two
+                  screens.</span
+                >
+              </p>
+              <div data-full>
+                <aside class="panel free" role="dialog" aria-label="Settings">
+                  <header>
+                    <h3>Settings</h3>
+                    <button type="button" class="x" data-act="close" aria-label="Close settings">
+                      <svg class="ic" aria-hidden="true" focusable="false">
+                        <use href="#i-x"></use>
+                      </svg>
+                    </button>
+                  </header>
+                  <div class="body">
+                    <div class="grp">
+                      <div class="row2">
+                        <div class="field">
+                          <div class="lab"><label for="p12-iv">Interval</label></div>
+                          <div class="join" data-join="interval">
+                            <input
+                              id="p12-iv"
+                              data-f="value"
+                              type="number"
+                              step="any"
+                              inputmode="decimal"
+                              value="10"
+                              aria-describedby="p12-iv-err"
+                              aria-invalid="false"
+                            />
+                            <select name="unit" data-f="unit" aria-label="Interval unit">
+                              <option value="seconds">seconds</option>
+                              <option value="minutes" selected="">minutes</option>
+                              <option value="hours">hours</option>
+                            </select>
+                          </div>
+                          <p class="err" id="p12-iv-err" data-err="interval" hidden=""></p>
+                        </div>
+                        <div class="field">
+                          <div class="lab"><label for="p12-du">Flash duration</label></div>
+                          <div class="join" data-join="dur">
+                            <input
+                              id="p12-du"
+                              data-f="dur"
+                              type="number"
+                              step="any"
+                              inputmode="decimal"
+                              value="2"
+                              aria-describedby="p12-du-err"
+                              aria-invalid="false"
+                            />
+                            <span class="suffix">seconds</span>
+                          </div>
+                          <p class="err" id="p12-du-err" data-err="dur" hidden=""></p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grp">
+                      <div class="field">
+                        <div class="lab">
+                          <span>Colors</span><span class="meta" data-colorcount="">1 of 6</span>
+                        </div>
+                        <div
+                          class="swatches"
+                          data-swatches=""
+                          role="group"
+                          aria-label="Flash colors"
+                        >
+                          <span class="sw"
+                            ><input
+                              type="color"
+                              name="color"
+                              data-f="color"
+                              value="#ffb547"
+                              aria-label="Color 1" /><button
+                              type="button"
+                              class="rm"
+                              data-act="rm"
+                              aria-label="Remove color 1"
+                              hidden=""
+                            >
+                              <svg class="ic" aria-hidden="true" focusable="false">
+                                <use href="#i-x"></use>
+                              </svg></button></span
+                          ><button type="button" class="add" data-act="add" aria-label="Add color">
+                            <svg class="ic" aria-hidden="true" focusable="false">
+                              <use href="#i-plus"></use>
+                            </svg>
+                          </button>
+                        </div>
+                        <p class="help">
+                          With more than one color, each pulse takes the next color in order.
+                        </p>
+                      </div>
+                      <div class="field inline">
+                        <div class="lab"><span>Idle color</span></div>
+                        <div class="idlectl">
+                          <span data-idlehex="">#1b1d20</span
+                          ><span class="sw"
+                            ><input
+                              type="color"
+                              name="idle"
+                              data-f="idle"
+                              value="#1b1d20"
+                              aria-label="Idle color"
+                          /></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grp">
+                      <div class="field">
+                        <div class="lab" id="p12-st">Style</div>
+                        <div class="seg" role="radiogroup" aria-labelledby="p12-st">
+                          <label
+                            ><input
+                              type="radio"
+                              name="p12-style"
+                              value="pulse"
+                              data-f="style"
+                              checked=""
+                            />Smooth pulse</label
+                          >
+                          <label
+                            ><input
+                              type="radio"
+                              name="p12-style"
+                              value="blink"
+                              data-f="style"
+                            />Hard blink</label
+                          >
+                        </div>
+                      </div>
+                      <div class="field">
+                        <div class="lab">
+                          <label for="p12-in">Intensity</label
+                          ><output data-out="intensity" for="p12-in">60%</output>
+                        </div>
+                        <input
+                          id="p12-in"
+                          type="range"
+                          min="10"
+                          max="100"
+                          step="5"
+                          value="60"
+                          data-f="intensity"
+                          aria-describedby="p12-warn"
+                          style="--fill: 55.55555555555556%"
+                        />
+                        <p class="help">Peak brightness of the flash over the idle color.</p>
+                        <div class="note" id="p12-warn" data-note="" role="status">
+                          <svg class="ic" aria-hidden="true" focusable="false">
+                            <use href="#i-warn"></use>
+                          </svg>
+                          <div>
+                            Flashing can trigger seizures in people with photosensitive epilepsy.
+                            Stop if anyone feels unwell.
+                          </div>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <div class="lab">
+                          <label for="p12-ra">Rate</label
+                          ><output data-out="rate" for="p12-ra">1 per second</output>
+                        </div>
+                        <input
+                          id="p12-ra"
+                          type="range"
+                          min="0.25"
+                          max="3"
+                          step="0.25"
+                          value="1"
+                          data-f="rate"
+                          style="--fill: 27.27272727272727%"
+                        />
+                        <p class="help">Pulses or blinks per second during a flash.</p>
+                      </div>
+                    </div>
+                    <div class="grp">
+                      <div class="toggle">
+                        <div>
+                          <label for="ot13">Always on top</label>
+                          <p class="help">Keeps the window above other windows.</p>
+                        </div>
+                        <span class="switch"
+                          ><input id="ot13" type="checkbox" role="switch" data-f="onTop" /><i></i
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                  <footer>
+                    <p class="why" data-why="" hidden="">Fix the highlighted fields to start.</p>
+                    <div class="actions">
+                      <button type="button" class="btn" data-act="preview">Preview flash</button>
+                      <button type="button" class="btn primary" data-act="start">Start</button>
+                    </div>
+                  </footer>
+                </aside>
+              </div>
+            </div>
+          </div>
+
+          <figure class="shot live" style="--w: 760; --h: 480">
+            <div class="scroll">
+              <div class="device">
+                <div class="chrome">
+                  <span></span><span class="t">Blinkr</span>
+                  <span class="wc" aria-hidden="true"
+                    ><svg class="ic"><use href="#i-min"></use></svg
+                    ><svg class="ic"><use href="#i-max"></use></svg
+                    ><svg class="ic"><use href="#i-x"></use></svg
+                  ></span>
+                </div>
+                <div
+                  class="win"
+                  data-live
+                  data-open
+                  data-state='{"value":0,"unit":"minutes","dur":45}'
+                  style="--h: 480; --idle: #1b1d20"
+                  tabindex="0"
+                  aria-label="Blinkr window. Press Space to start or stop. Press S for settings."
+                >
+                  <div class="flash"></div>
+                  <div class="bar" role="toolbar" aria-label="Window controls" hidden="">
+                    <button
+                      type="button"
+                      class="bar-btn"
+                      data-bar="toggle"
+                      title="Start (Space)"
+                      aria-keyshortcuts="Space"
+                    >
+                      Start
+                    </button>
+                    <span class="bar-sep" aria-hidden="true"></span>
+                    <button
+                      type="button"
+                      class="bar-btn"
+                      data-bar="settings"
+                      title="Settings (S)"
+                      aria-label="Settings"
+                      aria-keyshortcuts="S"
+                    >
+                      <svg class="ic" aria-hidden="true" focusable="false">
+                        <use href="#i-gear"></use>
+                      </svg>
+                    </button>
+                  </div>
+                  <aside class="panel open" role="dialog" aria-label="Settings">
+                    <header>
+                      <h3>Settings</h3>
+                      <button type="button" class="x" data-act="close" aria-label="Close settings">
+                        <svg class="ic" aria-hidden="true" focusable="false">
+                          <use href="#i-x"></use>
+                        </svg>
+                      </button>
+                    </header>
+                    <div class="body">
+                      <div class="grp">
+                        <div class="row2">
+                          <div class="field">
+                            <div class="lab"><label for="p5-iv">Interval</label></div>
+                            <div class="join bad" data-join="interval">
+                              <input
+                                id="p5-iv"
+                                data-f="value"
+                                type="number"
+                                step="any"
+                                inputmode="decimal"
+                                value="0"
+                                aria-describedby="p5-iv-err"
+                                aria-invalid="true"
+                              />
+                              <select name="unit" data-f="unit" aria-label="Interval unit">
+                                <option value="seconds">seconds</option>
+                                <option value="minutes" selected="">minutes</option>
+                                <option value="hours">hours</option>
+                              </select>
+                            </div>
+                            <p class="err" id="p5-iv-err" data-err="interval">
+                              <svg class="ic" aria-hidden="true" focusable="false">
+                                <use href="#i-warn"></use></svg
+                              ><span>Interval must be between 1 second and 24 hours.</span>
+                            </p>
+                          </div>
+                          <div class="field">
+                            <div class="lab"><label for="p5-du">Flash duration</label></div>
+                            <div class="join bad" data-join="dur">
+                              <input
+                                id="p5-du"
+                                data-f="dur"
+                                type="number"
+                                step="any"
+                                inputmode="decimal"
+                                value="45"
+                                aria-describedby="p5-du-err"
+                                aria-invalid="true"
+                              />
+                              <span class="suffix">seconds</span>
+                            </div>
+                            <p class="err" id="p5-du-err" data-err="dur">
+                              <svg class="ic" aria-hidden="true" focusable="false">
+                                <use href="#i-warn"></use></svg
+                              ><span>Flash duration must be between 0.5 and 30 seconds.</span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="grp">
+                        <div class="field">
+                          <div class="lab">
+                            <span>Colors</span><span class="meta" data-colorcount="">1 of 6</span>
+                          </div>
+                          <div
+                            class="swatches"
+                            data-swatches=""
+                            role="group"
+                            aria-label="Flash colors"
+                          >
+                            <span class="sw"
+                              ><input
+                                type="color"
+                                name="color"
+                                data-f="color"
+                                value="#ffb547"
+                                aria-label="Color 1" /><button
+                                type="button"
+                                class="rm"
+                                data-act="rm"
+                                aria-label="Remove color 1"
+                                hidden=""
+                              >
+                                <svg class="ic" aria-hidden="true" focusable="false">
+                                  <use href="#i-x"></use>
+                                </svg></button></span
+                            ><button
+                              type="button"
+                              class="add"
+                              data-act="add"
+                              aria-label="Add color"
+                            >
+                              <svg class="ic" aria-hidden="true" focusable="false">
+                                <use href="#i-plus"></use>
+                              </svg>
+                            </button>
+                          </div>
+                          <p class="help">
+                            With more than one color, each pulse takes the next color in order.
+                          </p>
+                        </div>
+                        <div class="field inline">
+                          <div class="lab"><span>Idle color</span></div>
+                          <div class="idlectl">
+                            <span data-idlehex="">#1b1d20</span
+                            ><span class="sw"
+                              ><input
+                                type="color"
+                                name="idle"
+                                data-f="idle"
+                                value="#1b1d20"
+                                aria-label="Idle color"
+                            /></span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="grp">
+                        <div class="field">
+                          <div class="lab" id="p5-st">Style</div>
+                          <div class="seg" role="radiogroup" aria-labelledby="p5-st">
+                            <label
+                              ><input
+                                type="radio"
+                                name="p5-style"
+                                value="pulse"
+                                data-f="style"
+                                checked=""
+                              />Smooth pulse</label
+                            >
+                            <label
+                              ><input
+                                type="radio"
+                                name="p5-style"
+                                value="blink"
+                                data-f="style"
+                              />Hard blink</label
+                            >
+                          </div>
+                        </div>
+                        <div class="field">
+                          <div class="lab">
+                            <label for="p5-in">Intensity</label
+                            ><output data-out="intensity" for="p5-in">60%</output>
+                          </div>
+                          <input
+                            id="p5-in"
+                            type="range"
+                            min="10"
+                            max="100"
+                            step="5"
+                            value="60"
+                            data-f="intensity"
+                            aria-describedby="p5-warn"
+                            style="--fill: 55.55555555555556%"
+                          />
+                          <p class="help">Peak brightness of the flash over the idle color.</p>
+                          <div class="note" id="p5-warn" data-note="" role="status">
+                            <svg class="ic" aria-hidden="true" focusable="false">
+                              <use href="#i-warn"></use>
+                            </svg>
+                            <div>
+                              Flashing can trigger seizures in people with photosensitive epilepsy.
+                              Stop if anyone feels unwell.
+                            </div>
+                          </div>
+                        </div>
+                        <div class="field">
+                          <div class="lab">
+                            <label for="p5-ra">Rate</label
+                            ><output data-out="rate" for="p5-ra">1 per second</output>
+                          </div>
+                          <input
+                            id="p5-ra"
+                            type="range"
+                            min="0.25"
+                            max="3"
+                            step="0.25"
+                            value="1"
+                            data-f="rate"
+                            style="--fill: 27.27272727272727%"
+                          />
+                          <p class="help">Pulses or blinks per second during a flash.</p>
+                        </div>
+                      </div>
+                      <div class="grp">
+                        <div class="toggle">
+                          <div>
+                            <label for="ot6">Always on top</label>
+                            <p class="help">Keeps the window above other windows.</p>
+                          </div>
+                          <span class="switch"
+                            ><input id="ot6" type="checkbox" role="switch" data-f="onTop" /><i></i
+                          ></span>
+                        </div>
+                      </div>
+                    </div>
+                    <footer>
+                      <p class="why" data-why="">Fix the highlighted fields to start.</p>
+                      <div class="actions">
+                        <button type="button" class="btn" data-act="preview" disabled="">
+                          Preview flash
+                        </button>
+                        <button type="button" class="btn primary" data-act="start" disabled="">
+                          Start
+                        </button>
+                      </div>
+                    </footer>
+                  </aside>
+                  <div class="menu" role="menu" aria-label="Window menu" hidden="">
+                    <button type="button" role="menuitem" data-m="settings">
+                      Settings <kbd>S</kbd>
+                    </button>
+                    <button type="button" role="menuitem" data-m="toggle">
+                      Start <kbd>Space</kbd>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <figcaption>
+              <div class="name">Validation errors <span class="size">760 × 480</span></div>
+              <p class="desc">
+                Out-of-range fields get a red outline and a message that states the limits. Start is
+                disabled until both are fixed. Preview flash is disabled while the duration is
+                invalid, since it needs a valid duration.
+              </p>
+            </figcaption>
+          </figure>
+
+          <div class="split">
+            <figure class="shot live" style="--w: 420; --h: 300">
+              <div class="scroll">
+                <div class="device">
+                  <div class="chrome">
+                    <span></span><span class="t">Blinkr</span>
+                    <span class="wc" aria-hidden="true"
+                      ><svg class="ic"><use href="#i-min"></use></svg
+                      ><svg class="ic"><use href="#i-max"></use></svg
+                      ><svg class="ic"><use href="#i-x"></use></svg
+                    ></span>
+                  </div>
+                  <div
+                    class="win"
+                    data-live
+                    data-open
+                    style="--h: 300; --idle: #1b1d20"
+                    tabindex="0"
+                    aria-label="Blinkr window. Press Space to start or stop. Press S for settings."
+                  >
+                    <div class="flash"></div>
+                    <div class="bar" role="toolbar" aria-label="Window controls" hidden="">
+                      <button
+                        type="button"
+                        class="bar-btn"
+                        data-bar="toggle"
+                        title="Start (Space)"
+                        aria-keyshortcuts="Space"
+                      >
+                        Start
+                      </button>
+                      <span class="bar-sep" aria-hidden="true"></span>
+                      <button
+                        type="button"
+                        class="bar-btn"
+                        data-bar="settings"
+                        title="Settings (S)"
+                        aria-label="Settings"
+                        aria-keyshortcuts="S"
+                      >
+                        <svg class="ic" aria-hidden="true" focusable="false">
+                          <use href="#i-gear"></use>
+                        </svg>
+                      </button>
+                    </div>
+                    <aside class="panel open" role="dialog" aria-label="Settings">
+                      <header>
+                        <h3>Settings</h3>
+                        <button
+                          type="button"
+                          class="x"
+                          data-act="close"
+                          aria-label="Close settings"
+                        >
+                          <svg class="ic" aria-hidden="true" focusable="false">
+                            <use href="#i-x"></use>
+                          </svg>
+                        </button>
+                      </header>
+                      <div class="body">
+                        <div class="grp">
+                          <div class="row2">
+                            <div class="field">
+                              <div class="lab"><label for="p7-iv">Interval</label></div>
+                              <div class="join" data-join="interval">
+                                <input
+                                  id="p7-iv"
+                                  data-f="value"
+                                  type="number"
+                                  step="any"
+                                  inputmode="decimal"
+                                  value="10"
+                                  aria-describedby="p7-iv-err"
+                                  aria-invalid="false"
+                                />
+                                <select name="unit" data-f="unit" aria-label="Interval unit">
+                                  <option value="seconds">seconds</option>
+                                  <option value="minutes" selected="">minutes</option>
+                                  <option value="hours">hours</option>
+                                </select>
+                              </div>
+                              <p class="err" id="p7-iv-err" data-err="interval" hidden=""></p>
+                            </div>
+                            <div class="field">
+                              <div class="lab"><label for="p7-du">Flash duration</label></div>
+                              <div class="join" data-join="dur">
+                                <input
+                                  id="p7-du"
+                                  data-f="dur"
+                                  type="number"
+                                  step="any"
+                                  inputmode="decimal"
+                                  value="2"
+                                  aria-describedby="p7-du-err"
+                                  aria-invalid="false"
+                                />
+                                <span class="suffix">seconds</span>
+                              </div>
+                              <p class="err" id="p7-du-err" data-err="dur" hidden=""></p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grp">
+                          <div class="field">
+                            <div class="lab">
+                              <span>Colors</span><span class="meta" data-colorcount="">1 of 6</span>
+                            </div>
+                            <div
+                              class="swatches"
+                              data-swatches=""
+                              role="group"
+                              aria-label="Flash colors"
+                            >
+                              <span class="sw"
+                                ><input
+                                  type="color"
+                                  name="color"
+                                  data-f="color"
+                                  value="#ffb547"
+                                  aria-label="Color 1" /><button
+                                  type="button"
+                                  class="rm"
+                                  data-act="rm"
+                                  aria-label="Remove color 1"
+                                  hidden=""
+                                >
+                                  <svg class="ic" aria-hidden="true" focusable="false">
+                                    <use href="#i-x"></use>
+                                  </svg></button></span
+                              ><button
+                                type="button"
+                                class="add"
+                                data-act="add"
+                                aria-label="Add color"
+                              >
+                                <svg class="ic" aria-hidden="true" focusable="false">
+                                  <use href="#i-plus"></use>
+                                </svg>
+                              </button>
+                            </div>
+                            <p class="help">
+                              With more than one color, each pulse takes the next color in order.
+                            </p>
+                          </div>
+                          <div class="field inline">
+                            <div class="lab"><span>Idle color</span></div>
+                            <div class="idlectl">
+                              <span data-idlehex="">#1b1d20</span
+                              ><span class="sw"
+                                ><input
+                                  type="color"
+                                  name="idle"
+                                  data-f="idle"
+                                  value="#1b1d20"
+                                  aria-label="Idle color"
+                              /></span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="grp">
+                          <div class="field">
+                            <div class="lab" id="p7-st">Style</div>
+                            <div class="seg" role="radiogroup" aria-labelledby="p7-st">
+                              <label
+                                ><input
+                                  type="radio"
+                                  name="p7-style"
+                                  value="pulse"
+                                  data-f="style"
+                                  checked=""
+                                />Smooth pulse</label
+                              >
+                              <label
+                                ><input
+                                  type="radio"
+                                  name="p7-style"
+                                  value="blink"
+                                  data-f="style"
+                                />Hard blink</label
+                              >
+                            </div>
+                          </div>
+                          <div class="field">
+                            <div class="lab">
+                              <label for="p7-in">Intensity</label
+                              ><output data-out="intensity" for="p7-in">60%</output>
+                            </div>
+                            <input
+                              id="p7-in"
+                              type="range"
+                              min="10"
+                              max="100"
+                              step="5"
+                              value="60"
+                              data-f="intensity"
+                              aria-describedby="p7-warn"
+                              style="--fill: 55.55555555555556%"
+                            />
+                            <p class="help">Peak brightness of the flash over the idle color.</p>
+                            <div class="note" id="p7-warn" data-note="" role="status">
+                              <svg class="ic" aria-hidden="true" focusable="false">
+                                <use href="#i-warn"></use>
+                              </svg>
+                              <div>
+                                Flashing can trigger seizures in people with photosensitive
+                                epilepsy. Stop if anyone feels unwell.
+                              </div>
+                            </div>
+                          </div>
+                          <div class="field">
+                            <div class="lab">
+                              <label for="p7-ra">Rate</label
+                              ><output data-out="rate" for="p7-ra">1 per second</output>
+                            </div>
+                            <input
+                              id="p7-ra"
+                              type="range"
+                              min="0.25"
+                              max="3"
+                              step="0.25"
+                              value="1"
+                              data-f="rate"
+                              style="--fill: 27.27272727272727%"
+                            />
+                            <p class="help">Pulses or blinks per second during a flash.</p>
+                          </div>
+                        </div>
+                        <div class="grp">
+                          <div class="toggle">
+                            <div>
+                              <label for="ot8">Always on top</label>
+                              <p class="help">Keeps the window above other windows.</p>
+                            </div>
+                            <span class="switch"
+                              ><input id="ot8" type="checkbox" role="switch" data-f="onTop" /><i></i
+                            ></span>
+                          </div>
+                        </div>
+                      </div>
+                      <footer>
+                        <p class="why" data-why="" hidden="">
+                          Fix the highlighted fields to start.
+                        </p>
+                        <div class="actions">
+                          <button type="button" class="btn" data-act="preview">
+                            Preview flash
+                          </button>
+                          <button type="button" class="btn primary" data-act="start">Start</button>
+                        </div>
+                      </footer>
+                    </aside>
+                    <div class="menu" role="menu" aria-label="Window menu" hidden="">
+                      <button type="button" role="menuitem" data-m="settings">
+                        Settings <kbd>S</kbd>
+                      </button>
+                      <button type="button" role="menuitem" data-m="toggle">
+                        Start <kbd>Space</kbd>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <figcaption>
+                <div class="name">Small window <span class="size">420 × 300</span></div>
+              </figcaption>
+            </figure>
+            <div class="words">
+              <p class="muted">
+                Below 560 pixels wide the panel fills the whole window. The controls scroll, and
+                Preview flash and Start stay pinned. Close the panel or widen the window to see the
+                flash.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= Intensity and warning ================= -->
+      <section class="plate" id="warning">
+        <h2>Intensity and the warning</h2>
+        <p class="lede">
+          The photosensitivity warning always sits under the intensity control. It turns stronger
+          when the rate is above 2 per second, or when a hard blink is above 70% intensity. Drag the
+          sliders to see it change.
+        </p>
+        <div class="trio">
+          <div>
+            <p class="spec-cap">
+              Calm
+              <span>Smooth pulse, 60%, 1 per second. The defaults.</span>
+            </p>
+            <div data-specimen data-state='{"style":"pulse","intensity":60,"rate":1}'>
+              <div class="panel free">
+                <div class="body">
+                  <div class="grp">
+                    <div class="field">
+                      <div class="lab" id="sp9-st">Style</div>
+                      <div class="seg" role="radiogroup" aria-labelledby="sp9-st">
+                        <label
+                          ><input
+                            type="radio"
+                            name="sp9-style"
+                            value="pulse"
+                            data-f="style"
+                            checked=""
+                          />Smooth pulse</label
+                        >
+                        <label
+                          ><input type="radio" name="sp9-style" value="blink" data-f="style" />Hard
+                          blink</label
+                        >
+                      </div>
+                    </div>
+                    <div class="field">
+                      <div class="lab">
+                        <label for="sp9-in">Intensity</label
+                        ><output data-out="intensity" for="sp9-in">60%</output>
+                      </div>
+                      <input
+                        id="sp9-in"
+                        type="range"
+                        min="10"
+                        max="100"
+                        step="5"
+                        value="60"
+                        data-f="intensity"
+                        aria-describedby="sp9-warn"
+                        style="--fill: 55.55555555555556%"
+                      />
+                      <p class="help">Peak brightness of the flash over the idle color.</p>
+                      <div class="note" id="sp9-warn" data-note="" role="status">
+                        <svg class="ic" aria-hidden="true" focusable="false">
+                          <use href="#i-warn"></use>
+                        </svg>
+                        <div>
+                          Flashing can trigger seizures in people with photosensitive epilepsy. Stop
+                          if anyone feels unwell.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <div class="lab">
+                        <label for="sp9-ra">Rate</label
+                        ><output data-out="rate" for="sp9-ra">1 per second</output>
+                      </div>
+                      <input
+                        id="sp9-ra"
+                        type="range"
+                        min="0.25"
+                        max="3"
+                        step="0.25"
+                        value="1"
+                        data-f="rate"
+                        style="--fill: 27.27272727272727%"
+                      />
+                      <p class="help">Pulses or blinks per second during a flash.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p class="spec-cap">
+              Stronger, fast rate
+              <span>Smooth pulse, 60%, 2.5 per second.</span>
+            </p>
+            <div data-specimen data-state='{"style":"pulse","intensity":60,"rate":2.5}'>
+              <div class="panel free">
+                <div class="body">
+                  <div class="grp">
+                    <div class="field">
+                      <div class="lab" id="sp10-st">Style</div>
+                      <div class="seg" role="radiogroup" aria-labelledby="sp10-st">
+                        <label
+                          ><input
+                            type="radio"
+                            name="sp10-style"
+                            value="pulse"
+                            data-f="style"
+                            checked=""
+                          />Smooth pulse</label
+                        >
+                        <label
+                          ><input type="radio" name="sp10-style" value="blink" data-f="style" />Hard
+                          blink</label
+                        >
+                      </div>
+                    </div>
+                    <div class="field">
+                      <div class="lab">
+                        <label for="sp10-in">Intensity</label
+                        ><output data-out="intensity" for="sp10-in">60%</output>
+                      </div>
+                      <input
+                        id="sp10-in"
+                        type="range"
+                        min="10"
+                        max="100"
+                        step="5"
+                        value="60"
+                        data-f="intensity"
+                        aria-describedby="sp10-warn"
+                        style="--fill: 55.55555555555556%"
+                      />
+                      <p class="help">Peak brightness of the flash over the idle color.</p>
+                      <div class="note hot" id="sp10-warn" data-note="" role="status">
+                        <svg class="ic" aria-hidden="true" focusable="false">
+                          <use href="#i-warn"></use>
+                        </svg>
+                        <div>
+                          <strong>Strong flashing</strong>Rates above 2 per second are more likely
+                          to trigger seizures. Lower the rate.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <div class="lab">
+                        <label for="sp10-ra">Rate</label
+                        ><output data-out="rate" for="sp10-ra">2.5 per second</output>
+                      </div>
+                      <input
+                        id="sp10-ra"
+                        type="range"
+                        min="0.25"
+                        max="3"
+                        step="0.25"
+                        value="2.5"
+                        data-f="rate"
+                        style="--fill: 81.81818181818183%"
+                      />
+                      <p class="help">Pulses or blinks per second during a flash.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p class="spec-cap">
+              Stronger, hard blink
+              <span>Hard blink, 85%, 1 per second.</span>
+            </p>
+            <div data-specimen data-state='{"style":"blink","intensity":85,"rate":1}'>
+              <div class="panel free">
+                <div class="body">
+                  <div class="grp">
+                    <div class="field">
+                      <div class="lab" id="sp11-st">Style</div>
+                      <div class="seg" role="radiogroup" aria-labelledby="sp11-st">
+                        <label
+                          ><input
+                            type="radio"
+                            name="sp11-style"
+                            value="pulse"
+                            data-f="style"
+                          />Smooth pulse</label
+                        >
+                        <label
+                          ><input
+                            type="radio"
+                            name="sp11-style"
+                            value="blink"
+                            data-f="style"
+                            checked=""
+                          />Hard blink</label
+                        >
+                      </div>
+                    </div>
+                    <div class="field">
+                      <div class="lab">
+                        <label for="sp11-in">Intensity</label
+                        ><output data-out="intensity" for="sp11-in">85%</output>
+                      </div>
+                      <input
+                        id="sp11-in"
+                        type="range"
+                        min="10"
+                        max="100"
+                        step="5"
+                        value="85"
+                        data-f="intensity"
+                        aria-describedby="sp11-warn"
+                        style="--fill: 83.33333333333334%"
+                      />
+                      <p class="help">Peak brightness of the flash over the idle color.</p>
+                      <div class="note hot" id="sp11-warn" data-note="" role="status">
+                        <svg class="ic" aria-hidden="true" focusable="false">
+                          <use href="#i-warn"></use>
+                        </svg>
+                        <div>
+                          <strong>Strong flashing</strong>Hard blinks above 70% are more likely to
+                          trigger seizures. Lower the intensity or switch to a smooth pulse.
+                        </div>
+                      </div>
+                    </div>
+                    <div class="field">
+                      <div class="lab">
+                        <label for="sp11-ra">Rate</label
+                        ><output data-out="rate" for="sp11-ra">1 per second</output>
+                      </div>
+                      <input
+                        id="sp11-ra"
+                        type="range"
+                        min="0.25"
+                        max="3"
+                        step="0.25"
+                        value="1"
+                        data-f="rate"
+                        style="--fill: 27.27272727272727%"
+                      />
+                      <p class="help">Pulses or blinks per second during a flash.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= Later ================= -->
+      <section class="plate" id="later">
+        <h2>Later: phase 2</h2>
+        <p class="lede">
+          Not built yet. Their places are reserved now so the panel does not rearrange when they
+          arrive. Dashed outlines mark them.
+        </p>
+        <div class="map">
+          <div data-later>
+            <aside class="panel free" role="dialog" aria-label="Settings">
+              <header>
+                <h3>Settings</h3>
+                <button type="button" class="x" data-act="close" aria-label="Close settings">
+                  <svg class="ic" aria-hidden="true" focusable="false"><use href="#i-x"></use></svg>
+                </button>
+              </header>
+              <div class="body">
+                <div class="grp">
+                  <div class="later">
+                    <span class="tag">Later</span>
+                    <div class="lab"><label for="pre15">Preset</label></div>
+                    <div class="preset">
+                      <div class="join">
+                        <select id="pre15" disabled="">
+                          <option>Default</option>
+                          <option>Desk break</option>
+                        </select>
+                      </div>
+                      <button type="button" class="btn small" disabled="">Save</button>
+                      <button type="button" class="btn small" disabled="">Rename</button>
+                      <button type="button" class="btn small danger" disabled="">Delete</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="grp">
+                  <div class="row2">
+                    <div class="field">
+                      <div class="lab"><label for="p14-iv">Interval</label></div>
+                      <div class="join" data-join="interval">
+                        <input
+                          id="p14-iv"
+                          data-f="value"
+                          type="number"
+                          step="any"
+                          inputmode="decimal"
+                          value="10"
+                          aria-describedby="p14-iv-err"
+                          aria-invalid="false"
+                        />
+                        <select name="unit" data-f="unit" aria-label="Interval unit">
+                          <option value="seconds">seconds</option>
+                          <option value="minutes" selected="">minutes</option>
+                          <option value="hours">hours</option>
+                        </select>
+                      </div>
+                      <p class="err" id="p14-iv-err" data-err="interval" hidden=""></p>
+                    </div>
+                    <div class="field">
+                      <div class="lab"><label for="p14-du">Flash duration</label></div>
+                      <div class="join" data-join="dur">
+                        <input
+                          id="p14-du"
+                          data-f="dur"
+                          type="number"
+                          step="any"
+                          inputmode="decimal"
+                          value="2"
+                          aria-describedby="p14-du-err"
+                          aria-invalid="false"
+                        />
+                        <span class="suffix">seconds</span>
+                      </div>
+                      <p class="err" id="p14-du-err" data-err="dur" hidden=""></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="grp">
+                  <div class="field">
+                    <div class="lab">
+                      <span>Colors</span><span class="meta" data-colorcount="">1 of 6</span>
+                    </div>
+                    <div class="swatches" data-swatches="" role="group" aria-label="Flash colors">
+                      <span class="sw"
+                        ><input
+                          type="color"
+                          name="color"
+                          data-f="color"
+                          value="#ffb547"
+                          aria-label="Color 1" /><button
+                          type="button"
+                          class="rm"
+                          data-act="rm"
+                          aria-label="Remove color 1"
+                          hidden=""
+                        >
+                          <svg class="ic" aria-hidden="true" focusable="false">
+                            <use href="#i-x"></use>
+                          </svg></button></span
+                      ><button type="button" class="add" data-act="add" aria-label="Add color">
+                        <svg class="ic" aria-hidden="true" focusable="false">
+                          <use href="#i-plus"></use>
+                        </svg>
+                      </button>
+                    </div>
+                    <p class="help">
+                      With more than one color, each pulse takes the next color in order.
+                    </p>
+                  </div>
+                  <div class="field inline">
+                    <div class="lab"><span>Idle color</span></div>
+                    <div class="idlectl">
+                      <span data-idlehex="">#1b1d20</span
+                      ><span class="sw"
+                        ><input
+                          type="color"
+                          name="idle"
+                          data-f="idle"
+                          value="#1b1d20"
+                          aria-label="Idle color"
+                      /></span>
+                    </div>
+                  </div>
+                </div>
+                <div class="grp">
+                  <div class="field">
+                    <div class="lab" id="p14-st">Style</div>
+                    <div class="seg" role="radiogroup" aria-labelledby="p14-st">
+                      <label
+                        ><input
+                          type="radio"
+                          name="p14-style"
+                          value="pulse"
+                          data-f="style"
+                          checked=""
+                        />Smooth pulse</label
+                      >
+                      <label
+                        ><input type="radio" name="p14-style" value="blink" data-f="style" />Hard
+                        blink</label
+                      >
+                    </div>
+                  </div>
+                  <div class="field">
+                    <div class="lab">
+                      <label for="p14-in">Intensity</label
+                      ><output data-out="intensity" for="p14-in">60%</output>
+                    </div>
+                    <input
+                      id="p14-in"
+                      type="range"
+                      min="10"
+                      max="100"
+                      step="5"
+                      value="60"
+                      data-f="intensity"
+                      aria-describedby="p14-warn"
+                      style="--fill: 55.55555555555556%"
+                    />
+                    <p class="help">Peak brightness of the flash over the idle color.</p>
+                    <div class="note" id="p14-warn" data-note="" role="status">
+                      <svg class="ic" aria-hidden="true" focusable="false">
+                        <use href="#i-warn"></use>
+                      </svg>
+                      <div>
+                        Flashing can trigger seizures in people with photosensitive epilepsy. Stop
+                        if anyone feels unwell.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <div class="lab">
+                      <label for="p14-ra">Rate</label
+                      ><output data-out="rate" for="p14-ra">1 per second</output>
+                    </div>
+                    <input
+                      id="p14-ra"
+                      type="range"
+                      min="0.25"
+                      max="3"
+                      step="0.25"
+                      value="1"
+                      data-f="rate"
+                      style="--fill: 27.27272727272727%"
+                    />
+                    <p class="help">Pulses or blinks per second during a flash.</p>
+                  </div>
+                </div>
+                <div class="grp">
+                  <div class="toggle">
+                    <div>
+                      <label for="ot16">Always on top</label>
+                      <p class="help">Keeps the window above other windows.</p>
+                    </div>
+                    <span class="switch"
+                      ><input id="ot16" type="checkbox" role="switch" data-f="onTop" /><i></i
+                    ></span>
+                  </div>
+                  <div class="later">
+                    <span class="tag">Later</span>
+                    <div class="toggle">
+                      <div>
+                        <label for="bl17">Borderless</label>
+                        <p class="help">Removes the title bar and frame.</p>
+                      </div>
+                      <span class="switch"
+                        ><input
+                          id="bl17"
+                          type="checkbox"
+                          role="switch"
+                          disabled=""
+                          data-f="later" /><i></i
+                      ></span>
+                    </div>
+                    <div class="toggle">
+                      <div>
+                        <label for="fs18">Fullscreen</label>
+                        <p class="help">Fills the screen. Space and S still work.</p>
+                      </div>
+                      <span class="switch"
+                        ><input
+                          id="fs18"
+                          type="checkbox"
+                          role="switch"
+                          disabled=""
+                          data-f="later" /><i></i
+                      ></span>
+                    </div>
+                  </div>
+                  <div class="later">
+                    <span class="tag">Later</span>
+                    <div class="toggle">
+                      <div>
+                        <label for="gs19">Global start and stop shortcut</label>
+                        <p class="help">Off by default. Works when Blinkr is not focused.</p>
+                      </div>
+                      <span class="switch"
+                        ><input
+                          id="gs19"
+                          type="checkbox"
+                          role="switch"
+                          disabled=""
+                          data-f="later" /><i></i
+                      ></span>
+                    </div>
+                    <div class="join" style="margin-top: 10px">
+                      <input
+                        type="text"
+                        name="shortcut"
+                        value="Ctrl+Alt+B"
+                        disabled=""
+                        aria-label="Shortcut"
+                      />
+                    </div>
+                    <p class="help">
+                      May not work on Linux with Wayland. Space in the window always works.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <footer>
+                <p class="why" data-why="" hidden="">Fix the highlighted fields to start.</p>
+                <div class="actions">
+                  <button type="button" class="btn" data-act="preview">Preview flash</button>
+                  <button type="button" class="btn primary" data-act="start">Start</button>
+                </div>
+              </footer>
+            </aside>
+          </div>
+          <dl>
+            <dt>Preset picker</dt>
+            <dd>
+              Top of the panel, because choosing a preset changes everything below it. Save, Rename,
+              and Delete sit under the picker.
+            </dd>
+            <dt>Borderless and fullscreen</dt>
+            <dd>Two switches in the window group, under Always on top.</dd>
+            <dt>Global start and stop shortcut</dt>
+            <dd>
+              Last in the window group. Off by default. A note explains that it may not work on
+              Linux with Wayland, and that Space in the window always works.
+            </dd>
+            <dt>Footer</dt>
+            <dd>Preview flash and Start stay pinned at the bottom, as now.</dd>
+          </dl>
+        </div>
+      </section>
+
+      <!-- ================= Defaults and limits ================= -->
+      <section class="plate" id="defaults">
+        <h2>Defaults and limits</h2>
+        <p class="lede">These are proposed. Confirm or change them at review.</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Setting</th>
+              <th>Default</th>
+              <th>Limits</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>Interval</th>
+              <td>10 minutes</td>
+              <td>1 second to 24 hours</td>
+              <td class="dim">A number plus seconds, minutes, or hours.</td>
+            </tr>
+            <tr>
+              <th>Flash duration</th>
+              <td>2 seconds</td>
+              <td>0.5 to 30 seconds</td>
+              <td class="dim">How long one flash lasts.</td>
+            </tr>
+            <tr>
+              <th>Colors</th>
+              <td><span class="chip" style="background: #ffb547"></span>Amber #ffb547</td>
+              <td>1 to 6 colors</td>
+              <td class="dim">With several, each pulse takes the next color in order.</td>
+            </tr>
+            <tr>
+              <th>Idle color</th>
+              <td><span class="chip" style="background: #1b1d20"></span>Dark neutral #1b1d20</td>
+              <td>Any color</td>
+              <td class="dim">Shown between flashes.</td>
+            </tr>
+            <tr>
+              <th>Style</th>
+              <td>Smooth pulse</td>
+              <td>Smooth pulse or hard blink</td>
+              <td class="dim">Several colors is not a style. It follows from the color count.</td>
+            </tr>
+            <tr>
+              <th>Intensity</th>
+              <td>60%</td>
+              <td>10% to 100%, in steps of 5%</td>
+              <td class="dim">Peak opacity of the flash over the idle color.</td>
+            </tr>
+            <tr>
+              <th>Rate</th>
+              <td>1 per second</td>
+              <td>0.25 to 3 per second, in steps of 0.25</td>
+              <td class="dim">Pulses or blinks per second during a flash.</td>
+            </tr>
+            <tr>
+              <th>Always on top</th>
+              <td>Off</td>
+              <td>On or off</td>
+              <td class="dim"></td>
+            </tr>
+            <tr>
+              <th>Window size</th>
+              <td>760 × 480</td>
+              <td>Freely resizable</td>
+              <td class="dim">The panel fills the window below 560 pixels wide.</td>
+            </tr>
+            <tr>
+              <th>Stronger warning</th>
+              <td class="dim">Calm</td>
+              <td>Rate above 2 per second, or blink above 70%</td>
+              <td class="dim">
+                Both limits are exclusive: exactly 2 per second and 70% stay calm.
+              </td>
+            </tr>
+            <tr>
+              <th>Reduced motion</th>
+              <td class="dim">Follows the system</td>
+              <td>Holds steady at peak</td>
+              <td class="dim">Applies to every style.</td>
+            </tr>
+            <tr class="later-row">
+              <th>Borderless, fullscreen</th>
+              <td>Off</td>
+              <td>Later</td>
+              <td></td>
+            </tr>
+            <tr class="later-row">
+              <th>Global shortcut</th>
+              <td>Off</td>
+              <td>Later</td>
+              <td>May not work on Linux with Wayland.</td>
+            </tr>
+            <tr class="later-row">
+              <th>Presets</th>
+              <td>None saved</td>
+              <td>Later</td>
+              <td>Count and name length to be decided.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ================= Choices to confirm ================= -->
+      <section class="plate" id="confirm">
+        <h2>Choices to confirm</h2>
+        <p class="lede">Design decisions the brief left open. Each one is easy to change now.</p>
+        <ul class="confirm">
+          <li>
+            <strong>Panel is a right drawer, 380 pixels wide.</strong> The left of the window stays
+            visible for previews. Below 560 pixels wide it fills the window.
+          </li>
+          <li>
+            <strong>The window has a small control bar,</strong> a translucent dark pill at the
+            bottom centre. Stopped, it holds Start and a gear. Running, it holds Stop and the gear.
+            Start and Stop are text, the gear is an icon named Settings.
+          </li>
+          <li>
+            <strong>Shortcuts live in tooltips,</strong> such as Start (Space), Stop (Space) and
+            Settings (S). The faint hint text is gone.
+          </li>
+          <li>
+            <strong>While running, the window is blank</strong> until you move the pointer over it,
+            click it, or press Tab. The bar then fades out after about 2 seconds without pointer
+            movement, when the pointer leaves the window, and never while one of its buttons has
+            keyboard focus. It does not wait for the pointer to leave the bar itself.
+          </li>
+          <li>
+            <strong>Starting from the bar hides it at once,</strong> unless the button was pressed
+            from the keyboard. Moving the pointer brings it back.
+          </li>
+          <li>
+            <strong>A click on the empty window no longer opens settings.</strong> Running, it only
+            shows the bar. The gear, <kbd>S</kbd> and the right-click menu open settings.
+          </li>
+          <li>
+            <strong>The bar is hidden while settings are open,</strong> and returns when they close.
+            The panel keeps its own Start and Stop button. Only Escape or the close button closes
+            settings.
+          </li>
+          <li>
+            <strong>The bar is dark and neutral, never amber,</strong> with a thin light edge so it
+            stays visible over a very dark or very light idle color. Light controls, quiet by
+            design, so the flash color stays the main color.
+          </li>
+          <li>
+            <strong>Reduced motion removes the fade.</strong> The bar shows and hides at once.
+          </li>
+          <li>
+            <strong>The right-click menu has two items,</strong> Settings and Start or Stop. It is
+            drawn inside the window, not by the system.
+          </li>
+          <li>
+            <strong>S and Space work only when the window has focus</strong> and you are not typing
+            in a field or on a button. Space on a focused bar button presses it.
+          </li>
+          <li>
+            <strong>Start hides the panel.</strong> If you open settings while running, the button
+            says Stop and the panel stays until you close it.
+          </li>
+          <li>
+            <strong>Whole pulses fit the duration.</strong> The app plays a whole number of pulses
+            and stretches the period to fit, so it is never faster than the rate you set. A 2 second
+            flash at 0.25 per second is one 2 second pulse.
+          </li>
+          <li>
+            <strong>Color order carries on across flashes.</strong> With 3 colors and 2 pulses per
+            flash, the next flash starts on the third color.
+          </li>
+          <li>
+            <strong>The warning is always visible and cannot be dismissed.</strong> It escalates at
+            rate above 2 per second, or hard blink above 70%.
+          </li>
+          <li>
+            <strong>Start is disabled when interval or duration is invalid.</strong> Stop is never
+            disabled. Preview flash is disabled only for an invalid duration.
+          </li>
+          <li>
+            <strong>Not validated:</strong> a flash duration longer than the interval. Say if it
+            should be.
+          </li>
+          <li>
+            <strong>Intensity moves in steps of 5%,</strong> and the interval accepts decimals such
+            as 1.5 minutes.
+          </li>
+          <li>
+            <strong>The panel is light on the dark window,</strong> and its controls are ink, not
+            amber, so the flash color is the only color in the product.
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <script>
+      /* ================= Shared data and helpers ================= */
+      const DEFAULTS = {
+        value: 10,
+        unit: 'minutes',
+        dur: 2,
+        colors: ['#ffb547'],
+        idle: '#1b1d20',
+        style: 'pulse',
+        intensity: 60,
+        rate: 1,
+        onTop: false,
+      };
+      const UNIT_SECONDS = { seconds: 1, minutes: 60, hours: 3600 };
+      const PALETTE = ['#ffb547', '#46c2cb', '#ff6f91', '#8f86ff', '#8bd35c', '#f2f2f2'];
+      const DEMO_MS = 5000;
+      const BAR_IDLE_MS = 2000;
+
+      const icon = (name) =>
+        `<svg class="ic" aria-hidden="true" focusable="false"><use href="#i-${name}"/></svg>`;
+
+      function plan(dur, rate) {
+        const n = Math.max(1, Math.floor(dur * rate + 1e-9));
+        return { n, period: dur / n };
+      }
+      function validate(s) {
+        const secs = s.value * UNIT_SECONDS[s.unit];
+        const e = {};
+        if (!Number.isFinite(secs) || secs < 1 || secs > 86400) {
+          e.interval = 'Interval must be between 1 second and 24 hours.';
+        }
+        if (!Number.isFinite(s.dur) || s.dur < 0.5 || s.dur > 30) {
+          e.dur = 'Flash duration must be between 0.5 and 30 seconds.';
+        }
+        return e;
+      }
+      function warning(s) {
+        const fast = s.rate > 2;
+        const hard = s.style === 'blink' && s.intensity > 70;
+        if (!fast && !hard) {
+          return {
+            hot: false,
+            html: `${icon('warn')}<div>Flashing can trigger seizures in people with photosensitive epilepsy. Stop if anyone feels unwell.</div>`,
+          };
+        }
+        let body;
+        if (fast && hard) {
+          body =
+            'Fast, hard blinking is more likely to trigger seizures. Lower the rate and intensity, or switch to a smooth pulse.';
+        } else if (fast) {
+          body = 'Rates above 2 per second are more likely to trigger seizures. Lower the rate.';
+        } else {
+          body =
+            'Hard blinks above 70% are more likely to trigger seizures. Lower the intensity or switch to a smooth pulse.';
+        }
+        return {
+          hot: true,
+          html: `${icon('warn')}<div><strong>Strong flashing</strong>${body}</div>`,
+        };
+      }
+      const fmtRate = (r) => `${+r.toFixed(2)} per second`;
+
+      function swatchHTML(c) {
+        return `<span class="sw"><input type="color" name="color" data-f="color" value="${c}" aria-label="Color"><button type="button" class="rm" data-act="rm" aria-label="Remove color">${icon('x')}</button></span>`;
+      }
+
+      /* ================= Panel behavior ================= */
+      function bindPanel(root, api = {}) {
+        const $ = (sel) => root.querySelector(sel);
+        const $$ = (sel) => [...root.querySelectorAll(sel)];
+        const state = { ...DEFAULTS, ...api.init };
+        state.colors = [...state.colors];
+        let running = false;
+
+        function read() {
+          if ($('[data-f=value]')) {
+            state.value = $('[data-f=value]').valueAsNumber;
+            state.unit = $('[data-f=unit]').value;
+            state.dur = $('[data-f=dur]').valueAsNumber;
+          }
+          const cols = $$('[data-f=color]');
+          if (cols.length) state.colors = cols.map((c) => c.value);
+          if ($('[data-f=idle]')) state.idle = $('[data-f=idle]').value;
+          if ($('[data-f=style]:checked')) state.style = $('[data-f=style]:checked').value;
+          if ($('[data-f=intensity]')) state.intensity = +$('[data-f=intensity]').value;
+          if ($('[data-f=rate]')) state.rate = +$('[data-f=rate]').value;
+          if ($('[data-f=onTop]')) state.onTop = $('[data-f=onTop]').checked;
+        }
+        function fill(input) {
+          const min = +input.min;
+          const max = +input.max;
+          input.style.setProperty('--fill', `${((input.value - min) / (max - min)) * 100}%`);
+        }
+        function sync() {
+          read();
+          const errs = validate(state);
+
+          const outI = $('[data-out=intensity]');
+          if (outI) outI.textContent = `${state.intensity}%`;
+          const outR = $('[data-out=rate]');
+          if (outR) outR.textContent = fmtRate(state.rate);
+          $$('input[type=range]').forEach(fill);
+
+          for (const key of ['interval', 'dur']) {
+            const join = $(`[data-join=${key}]`);
+            if (!join) continue;
+            const msg = $(`[data-err=${key}]`);
+            join.classList.toggle('bad', !!errs[key]);
+            join.querySelector('input').setAttribute('aria-invalid', errs[key] ? 'true' : 'false');
+            msg.hidden = !errs[key];
+            msg.innerHTML = errs[key] ? `${icon('warn')}<span>${errs[key]}</span>` : '';
+          }
+
+          const note = $('[data-note]');
+          if (note) {
+            const w = warning(state);
+            note.className = `note${w.hot ? ' hot' : ''}`;
+            note.innerHTML = w.html;
+          }
+
+          const idleHex = $('[data-idlehex]');
+          if (idleHex) idleHex.textContent = state.idle;
+
+          const count = $('[data-colorcount]');
+          if (count) {
+            count.textContent = `${state.colors.length} of 6`;
+            $$('.sw .rm').forEach((b, i) => {
+              b.hidden = state.colors.length <= 1;
+              b.setAttribute('aria-label', `Remove color ${i + 1}`);
+            });
+            $$('[data-f=color]').forEach((c, i) => c.setAttribute('aria-label', `Color ${i + 1}`));
+            $('[data-act=add]').disabled = state.colors.length >= 6;
+          }
+
+          const start = $('[data-act=start]');
+          const preview = $('[data-act=preview]');
+          if (start) {
+            start.textContent = running ? 'Stop' : 'Start';
+            start.disabled = !running && !!(errs.interval || errs.dur);
+          }
+          if (preview) preview.disabled = !!errs.dur;
+          const why = $('[data-why]');
+          if (why) why.hidden = !!running || !(errs.interval || errs.dur);
+
+          api.change?.(state, errs);
+        }
+
+        root.addEventListener('input', sync);
+        root.addEventListener('change', sync);
+        root.addEventListener('click', (e) => {
+          const btn = e.target.closest('[data-act]');
+          if (!btn || btn.disabled) return;
+          const act = btn.dataset.act;
+          if (act === 'add') {
+            const sw = $('[data-swatches]');
+            const next = PALETTE.find((c) => !state.colors.includes(c)) || '#ffffff';
+            sw.querySelector('[data-act=add]').insertAdjacentHTML('beforebegin', swatchHTML(next));
+            sync();
+            [...sw.querySelectorAll('[data-f=color]')].at(-1).focus();
+          } else if (act === 'rm') {
+            const sw = btn.closest('.sw');
+            const prev = sw.previousElementSibling?.querySelector('input');
+            sw.remove();
+            sync();
+            (prev || $('[data-f=color]'))?.focus();
+          } else if (act === 'preview') api.preview?.(state);
+          else if (act === 'start') api.toggle?.(state);
+          else if (act === 'close') api.close?.();
+        });
+
+        sync();
+        return {
+          state,
+          sync,
+          setRunning(r) {
+            running = r;
+            sync();
+          },
+        };
+      }
+
+      /* ================= Flash engine ================= */
+      function setFlashVars(f, s, { n, period, idx }) {
+        const N = s.colors.length;
+        const st = f.style;
+        f.dataset.style = s.style;
+        st.setProperty('--peak', s.intensity / 100);
+        st.setProperty('--period', `${period}s`);
+        st.setProperty('--count', n);
+        s.colors.forEach((c, i) => st.setProperty(`--c${i + 1}`, c));
+        st.setProperty('--cur', s.colors[idx]);
+        st.setProperty('--cycle', `${N * period}s`);
+        st.setProperty('--shift', `${idx * period}s`);
+        st.setProperty('--hues', N > 1 ? `hue${N}` : 'none');
+        st.setProperty('--shape', s.style === 'blink' ? 'blink' : 'pulse');
+      }
+      function playFlash(win, s) {
+        const f = win.querySelector('.flash');
+        const dur = s.dur >= 0.5 && s.dur <= 30 ? s.dur : DEFAULTS.dur;
+        const { n, period } = plan(dur, s.rate);
+        const seq = win._seq || 0;
+        setFlashVars(f, s, { n, period, idx: seq % s.colors.length });
+        f.classList.remove('go');
+        void f.offsetWidth;
+        f.classList.add('go');
+        clearTimeout(win._t);
+        win._t = setTimeout(() => f.classList.remove('go'), dur * 1000);
+        win._seq = seq + n;
+      }
+
+      /* ================= Live window ================= */
+      function mountLive(win, cfg = {}) {
+        const init = { ...DEFAULTS, ...cfg.state };
+        let running = false;
+        let panelOpen = !!cfg.open;
+        let menuOpen = false;
+        let timer = null;
+
+        const panel = win.querySelector('.panel');
+        const bar = win.querySelector('.bar');
+        const barToggle = bar.querySelector('[data-bar=toggle]');
+        let barTimer = null;
+        const menu = win.querySelector('.menu');
+        const toggleItem = menu.querySelector('[data-m=toggle]');
+
+        const p = bindPanel(panel, {
+          init,
+          change(s) {
+            win.style.setProperty('--idle', s.idle);
+          },
+          preview: (s) => playFlash(win, s),
+          toggle: () => toggle(),
+          close: () => closePanel(),
+        });
+
+        // Bar: always up while stopped. While running it is hidden until the
+        // pointer, a click, or Tab asks for it, and it never fades under keyboard focus.
+        const keyboardOnBar = () => !!bar.querySelector(':focus-visible');
+        function armBar() {
+          clearTimeout(barTimer);
+          barTimer = setTimeout(fadeBar, BAR_IDLE_MS);
+        }
+        function revealBar() {
+          if (!running || panelOpen) return;
+          bar.classList.remove('away');
+          armBar();
+        }
+        function fadeBar() {
+          clearTimeout(barTimer);
+          if (running && !keyboardOnBar()) bar.classList.add('away');
+        }
+
+        function paint() {
+          bar.hidden = panelOpen;
+          const label = running ? 'Stop' : 'Start';
+          barToggle.textContent = label;
+          barToggle.title = `${label} (Space)`;
+          if (!running) {
+            clearTimeout(barTimer);
+            bar.classList.remove('away');
+          }
+          toggleItem.firstChild.textContent = running ? 'Stop ' : 'Start ';
+          p.setRunning(running);
+          cfg.onState?.(running);
+        }
+        function openPanel() {
+          closeMenu(false);
+          panelOpen = true;
+          clearTimeout(barTimer);
+          panel.classList.add('open');
+          panel.inert = false;
+          paint();
+          const first =
+            panel.querySelector('[data-f=value]') || panel.querySelector('input,select,button');
+          first?.focus({ preventScroll: true });
+        }
+        function closePanel() {
+          panelOpen = false;
+          panel.classList.remove('open');
+          panel.inert = true;
+          if (running) bar.classList.add('away');
+          paint();
+          win.focus({ preventScroll: true });
+        }
+        function openMenu(x, y) {
+          menuOpen = true;
+          menu.hidden = false;
+          const mw = menu.offsetWidth;
+          const mh = menu.offsetHeight;
+          menu.style.left = `${Math.max(4, Math.min(x, win.clientWidth - mw - 4))}px`;
+          menu.style.top = `${Math.max(4, Math.min(y, win.clientHeight - mh - 4))}px`;
+          menu.querySelector('button').focus({ preventScroll: true });
+        }
+        function closeMenu(refocus = true) {
+          if (!menuOpen) return;
+          menuOpen = false;
+          menu.hidden = true;
+          if (refocus) win.focus({ preventScroll: true });
+        }
+        function toggle() {
+          running = !running;
+          clearInterval(timer);
+          if (running) {
+            timer = setInterval(() => playFlash(win, p.state), DEMO_MS);
+            if (panelOpen) closePanel();
+          }
+          paint();
+          if (running) {
+            if (keyboardOnBar()) revealBar();
+            else fadeBar();
+          }
+        }
+
+        win.addEventListener('click', (e) => {
+          if (e.target.closest('.panel')) return;
+          const b = e.target.closest('[data-bar]')?.dataset.bar;
+          if (b === 'settings') return openPanel();
+          if (b === 'toggle') return toggle();
+          if (e.target.closest('.bar')) return;
+          if (e.target.closest('.menu')) {
+            const m = e.target.closest('[data-m]')?.dataset.m;
+            if (m === 'settings') openPanel();
+            if (m === 'toggle') {
+              closeMenu(false);
+              toggle();
+              win.focus({ preventScroll: true });
+            }
+            return;
+          }
+          if (menuOpen) return closeMenu();
+          revealBar();
+        });
+        win.addEventListener('pointermove', revealBar);
+        win.addEventListener('pointerleave', fadeBar);
+        win.addEventListener('focus', () => {
+          if (win.matches(':focus-visible')) revealBar();
+        });
+        bar.addEventListener('focusin', revealBar);
+        bar.addEventListener('focusout', () => running && armBar());
+        win.addEventListener('contextmenu', (e) => {
+          if (e.target.closest('.panel')) return;
+          e.preventDefault();
+          const r = win.getBoundingClientRect();
+          const z = r.width / win.offsetWidth || 1;
+          openMenu((e.clientX - r.left) / z, (e.clientY - r.top) / z);
+        });
+        win.addEventListener('keydown', (e) => {
+          if (e.key === 'Tab') revealBar();
+          if (e.key === 'Escape') {
+            if (menuOpen) closeMenu();
+            else if (panelOpen) closePanel();
+            return;
+          }
+          if (menuOpen) {
+            const items = [...menu.querySelectorAll('button')];
+            const i = items.indexOf(document.activeElement);
+            if (e.key === 'ArrowDown') items[(i + 1) % items.length].focus();
+            if (e.key === 'ArrowUp') items[(i - 1 + items.length) % items.length].focus();
+            return;
+          }
+          if (e.target.closest('input,select,textarea,button')) return;
+          if (e.key === 's' || e.key === 'S') {
+            e.preventDefault();
+            if (!panelOpen) openPanel();
+          } else if (e.key === ' ') {
+            e.preventDefault();
+            toggle();
+          }
+        });
+        paint();
+      }
+
+      /* ================= Static flash demos ================= */
+      function mountDemo(fig) {
+        const s = { ...DEFAULTS, ...JSON.parse(fig.dataset.state) };
+        const win = fig.querySelector('.win');
+        const f = win.querySelector('.flash');
+        const { n, period } = plan(s.dur, s.rate);
+        fig.querySelector('[data-play]').addEventListener('click', () => {
+          setFlashVars(f, s, { n, period, idx: 0 });
+          f.classList.remove('go');
+          void f.offsetWidth;
+          f.classList.add('go');
+          clearTimeout(win._t);
+          win._t = setTimeout(() => f.classList.remove('go'), s.dur * 1000);
+        });
+      }
+
+      /* ================= Boot ================= */
+      const status = document.getElementById('status');
+      mountLive(document.getElementById('hero'), {
+        onState(running) {
+          status.innerHTML = running
+            ? '<strong>Running.</strong> Demo flash every 5 seconds.'
+            : '<strong>Stopped.</strong>';
+        },
+      });
+      document.querySelectorAll('.win[data-live]').forEach((w) =>
+        mountLive(w, {
+          open: w.hasAttribute('data-open'),
+          state: w.dataset.state ? JSON.parse(w.dataset.state) : {},
+        }),
+      );
+      document.querySelectorAll('figure.demo').forEach(mountDemo);
+      document.querySelectorAll('[data-specimen]').forEach((el) => {
+        bindPanel(el, { init: { ...DEFAULTS, ...JSON.parse(el.dataset.state) } });
+      });
+      document
+        .querySelectorAll('[data-full], [data-later]')
+        .forEach((el) => bindPanel(el, { init: DEFAULTS }));
+    </script>
+  </body>
+</html>
