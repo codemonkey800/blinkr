@@ -10,3 +10,5 @@ src-tauri/icons/
 .idea/
 .vscode/
 .claude/
+**/.hyperframes/
+**/renders/

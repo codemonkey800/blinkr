@@ -1,5 +1,7 @@
 # Blinkr
 
+![Blinkr: a silent, visual-only repeating timer](docs/images/blinkr-product.png)
+
 A minimal, silent, visual-only repeating timer. Blinkr is a plain resizable window that stays blank and flashes a color on a set interval. There is no countdown display and no audio.
 
 ## Overview

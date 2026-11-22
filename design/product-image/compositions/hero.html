@@ -1,0 +1,213 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      color: #f2f3f5;
+      background: #0e1014;
+      --flash: #ffb547;
+    }
+    #hero-glow {
+      position: absolute;
+      left: 560px;
+      top: 300px;
+      width: 1200px;
+      height: 900px;
+      background: radial-gradient(
+        closest-side,
+        rgba(255, 181, 71, 0.3),
+        rgba(255, 181, 71, 0.08) 55%,
+        rgba(255, 181, 71, 0) 100%
+      );
+    }
+    #hero-copy {
+      position: absolute;
+      left: 150px;
+      top: 0;
+      bottom: 0;
+      width: 620px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    #hero-icon {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 40px;
+      display: block;
+    }
+    #hero-name {
+      font-size: 156px;
+      font-weight: 900;
+      letter-spacing: -0.045em;
+      line-height: 0.9;
+    }
+    #hero-tagline {
+      margin-top: 30px;
+      font-size: 42px;
+      font-weight: 400;
+      line-height: 1.25;
+      color: #a8b0bd;
+      max-width: 560px;
+    }
+    #hero-chips {
+      margin-top: 52px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .hero-chip {
+      font-size: 24px;
+      font-weight: 700;
+      color: #d7dbe2;
+      padding: 12px 22px;
+      border-radius: 999px;
+      border: 1.5px solid #343944;
+      background: #161920;
+    }
+    .hero-win {
+      position: absolute;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #1b1e25;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .hero-bar {
+      height: 38px;
+      background: #24272f;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding-left: 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+      position: relative;
+    }
+    .hero-dot {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+    }
+    .hero-dot:nth-child(1) {
+      background: #ff5f57;
+    }
+    .hero-dot:nth-child(2) {
+      background: #febc2e;
+    }
+    .hero-dot:nth-child(3) {
+      background: #28c840;
+    }
+    .hero-title {
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 700;
+      color: #9aa1ad;
+    }
+    #hero-settings {
+      left: 1040px;
+      top: 130px;
+      width: 760px;
+      box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55);
+    }
+    #hero-settings img {
+      display: block;
+      width: 760px;
+      height: 520px;
+    }
+    #hero-flash {
+      left: 820px;
+      top: 520px;
+      width: 580px;
+      box-shadow:
+        0 0 0 1px rgba(255, 181, 71, 0.35),
+        0 30px 140px rgba(255, 181, 71, 0.45),
+        0 40px 80px rgba(0, 0, 0, 0.5);
+    }
+    #hero-flash-fill {
+      height: 400px;
+      background: var(--flash);
+    }
+  </style>
+  <div
+    id="root"
+    data-composition-id="hero"
+    data-width="1920"
+    data-height="1080"
+    data-layout-allow-overlap
+  >
+    <div id="hero-glow" class="clip" data-start="0" data-duration="3" data-track-index="0"></div>
+
+    <div id="hero-copy" class="clip" data-start="0" data-duration="3" data-track-index="1">
+      <img id="hero-icon" src="assets/icon.svg" alt="Blinkr icon" />
+      <h1 id="hero-name">Blinkr</h1>
+      <p id="hero-tagline" data-var-text="tagline">A silent, visual-only repeating timer.</p>
+      <div id="hero-chips">
+        <span class="hero-chip">No countdown</span>
+        <span class="hero-chip">No audio</span>
+        <span class="hero-chip">Just a flash</span>
+        <span class="hero-chip">macOS · Windows · Linux</span>
+      </div>
+    </div>
+
+    <div
+      id="hero-settings"
+      class="hero-win clip"
+      data-start="0"
+      data-duration="3"
+      data-track-index="2"
+    >
+      <div class="hero-bar">
+        <span class="hero-dot"></span><span class="hero-dot"></span><span class="hero-dot"></span
+        ><span class="hero-title">Blinkr</span>
+      </div>
+      <img src="assets/settings.png" alt="Blinkr settings drawer" />
+    </div>
+
+    <div
+      id="hero-flash"
+      class="hero-win clip"
+      data-start="0"
+      data-duration="3"
+      data-track-index="3"
+    >
+      <div class="hero-bar">
+        <span class="hero-dot"></span><span class="hero-dot"></span><span class="hero-dot"></span
+        ><span class="hero-title">Blinkr</span>
+      </div>
+      <div id="hero-flash-fill"></div>
+    </div>
+  </div>
+  <script>
+    const tl = gsap.timeline({ paused: true });
+    tl.fromTo(
+      '#hero-name, #hero-icon',
+      { opacity: 0, y: 24 },
+      { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: 0.08 },
+      0.1,
+    );
+    tl.fromTo(
+      '#hero-tagline, #hero-chips',
+      { opacity: 0, y: 18 },
+      { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: 0.1 },
+      0.35,
+    );
+    tl.fromTo(
+      '#hero-settings .hero-bar, #hero-settings img',
+      { opacity: 0 },
+      { opacity: 1, duration: 0.6, ease: 'power2.out' },
+      0.3,
+    );
+    tl.fromTo(
+      '#hero-flash-fill',
+      { opacity: 0.15 },
+      { opacity: 1, duration: 0.5, ease: 'sine.inOut' },
+      0.9,
+    );
+    tl.fromTo('#hero-glow', { opacity: 0 }, { opacity: 1, duration: 0.6, ease: 'sine.inOut' }, 0.9);
+    window.__timelines['hero'] = tl;
+  </script>
+</template>
