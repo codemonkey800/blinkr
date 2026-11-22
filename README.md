@@ -4,6 +4,24 @@
 
 A minimal, silent, visual-only repeating timer. Blinkr is a plain resizable window that stays blank and flashes a color on a set interval. There is no countdown display and no audio.
 
+## See it in action
+
+**Set it and forget it.** Start the timer, and the window stays blank until each interval ends in a flash.
+
+![Starting the timer, then the window flashing amber when the interval ends](docs/images/blinkr-loop.gif)
+
+**Tune the flash.** Set the interval, duration, colors, and intensity, then preview the flash without waiting.
+
+![Changing settings in the drawer, then previewing a flash that cycles through three colors](docs/images/blinkr-settings.gif)
+
+**Save presets.** Keep the setups you use and switch between them from the drawer.
+
+![Saving two presets, then switching between them](docs/images/blinkr-presets.gif)
+
+**Stay out of the way.** Use the right-click menu or the keyboard. The controls hide while the timer runs.
+
+![Previewing a flash from the right-click menu, then using the S, Escape, and Space keys](docs/images/blinkr-controls.gif)
+
 ## Overview
 
 Blinkr is a super simple repeating countdown timer that works as a visual cue:

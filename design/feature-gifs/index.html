@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1000, height=760" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1000px;
+        height: 760px;
+        overflow: hidden;
+        background: #0e1014;
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      One scene per README GIF in docs/images. Render a scene's range to MP4, then convert:
+        npx hyperframes render --start=0 --end=11 --quality=delivery --output=renders/loop.mp4
+        ffmpeg -i renders/loop.mp4 -vf "fps=15,scale=880:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=192:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" -loop 0 ../../docs/images/blinkr-loop.gif
+    -->
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="69.4"
+      data-width="1000"
+      data-height="760"
+    >
+      <div
+        id="loop"
+        data-composition-id="loop"
+        data-composition-src="compositions/loop.html"
+        data-start="0"
+        data-duration="11"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1000"
+        data-height="760"
+      ></div>
+      <div
+        id="settings"
+        data-composition-id="settings"
+        data-composition-src="compositions/settings.html"
+        data-start="11"
+        data-duration="20.5"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1000"
+        data-height="760"
+      ></div>
+      <div
+        id="presets"
+        data-composition-id="presets"
+        data-composition-src="compositions/presets.html"
+        data-start="31.5"
+        data-duration="21.8"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1000"
+        data-height="760"
+      ></div>
+      <div
+        id="controls"
+        data-composition-id="controls"
+        data-composition-src="compositions/controls.html"
+        data-start="53.3"
+        data-duration="16.1"
+        data-track-index="1"
+        data-track-kind="graphics"
+        data-width="1000"
+        data-height="760"
+      ></div>
+    </div>
+    <script>
+      window.__timelines['main'] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

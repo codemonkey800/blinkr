@@ -1,0 +1,100 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: #0e1014;
+      font-family: 'Inter', sans-serif;
+      color: #f2f3f5;
+    }
+    #presets-title {
+      position: absolute;
+      left: 60px;
+      top: 38px;
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+    #presets-sub {
+      position: absolute;
+      left: 60px;
+      top: 88px;
+      width: 880px;
+      font-size: 21px;
+      color: #a8b0bd;
+    }
+    #presets-win {
+      position: absolute;
+      left: 60px;
+      top: 146px;
+      width: 880px;
+      height: 558px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #1b1e25;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+    }
+    #presets-bar {
+      height: 38px;
+      background: #24272f;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding-left: 16px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.35);
+    }
+    #presets-bar i {
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+    }
+    #presets-bar i:nth-child(1) {
+      background: #ff5f57;
+    }
+    #presets-bar i:nth-child(2) {
+      background: #febc2e;
+    }
+    #presets-bar i:nth-child(3) {
+      background: #28c840;
+    }
+    #presets-bar span {
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 700;
+      color: #9aa1ad;
+    }
+    #presets-video {
+      position: absolute;
+      left: 0;
+      top: 38px;
+      width: 880px;
+      height: 520px;
+      display: block;
+    }
+  </style>
+  <div id="root" data-composition-id="presets" data-width="1000" data-height="760">
+    <h1 id="presets-title">Save presets</h1>
+    <p id="presets-sub">Keep the setups you use and switch between them from the drawer.</p>
+    <div id="presets-win">
+      <div id="presets-bar"><i></i><i></i><i></i><span data-layout-ignore>Blinkr</span></div>
+      <video
+        id="presets-video"
+        class="clip"
+        data-start="0"
+        data-duration="21.8"
+        data-track-index="0"
+        src="assets/presets.mp4"
+        muted
+        playsinline
+      ></video>
+    </div>
+  </div>
+  <script>
+    window.__timelines['presets'] = gsap.timeline({ paused: true });
+  </script>
+</template>
