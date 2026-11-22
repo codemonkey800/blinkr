@@ -1,0 +1,17 @@
+[package]
+name = "blinkr"
+version = "0.1.0"
+description = "A minimal visual repeating timer"
+authors = ["Blinkr"]
+edition = "2024"
+rust-version = "1.99.1"
+
+[lib]
+name = "blinkr_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "=2.7.6", features = [] }
+
+[dependencies]
+tauri = { version = "=2.12.7", features = [] }

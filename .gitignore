@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
+# Keep run plans versioned while ignoring local Nexus state.
+.nexus/*
+!.nexus/plans/
+.nexus/plans/*
+!.nexus/plans/*.md
+!.nexus/plans/*.tasks.yaml
+src-tauri/target/
+src-tauri/gen/

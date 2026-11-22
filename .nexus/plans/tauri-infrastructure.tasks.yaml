@@ -1,0 +1,198 @@
+nexus-tasks: 1
+phases:
+  - key: '1'
+    name: Desktop infrastructure
+    tasks:
+      - id: T1
+        title: Scaffold and verify the runnable desktop toolchain
+        after: []
+        files:
+          - README.md
+          - package.json
+          - pnpm-lock.yaml
+          - .node-version
+          - .npmrc
+          - .gitignore
+          - .prettierignore
+          - .prettierrc.json
+          - eslint.config.js
+          - index.html
+          - tsconfig.json
+          - tsconfig.app.json
+          - tsconfig.node.json
+          - vite.config.ts
+          - src/
+          - src-tauri/
+          - rust-toolchain.toml
+          - tests/
+        status: done
+        commit: 2e337c373e780b300ecd86cf067b71ede66fef5b
+        body: |
+          Create a minimal React + strict TypeScript + Vite frontend at the root and
+          a Tauri v2 Rust desktop application under src-tauri/. Read README.md first
+          and leave its requirements untouched. Do not run a generator over the
+          existing README or leave package-manager/template detritus.
+          README.md is declared only for whitespace changes needed by formatting;
+          leave its content and status update to the documentation task.
+
+          Create package.json, pnpm-lock.yaml, .node-version, .npmrc, .gitignore,
+          .prettierignore, .prettierrc.json, eslint.config.js, index.html, the three
+          listed tsconfig files, vite.config.ts, src/ and rust-toolchain.toml.
+          Pin Node 24.15.0 in .node-version, pnpm 9.15.9 in packageManager and an
+          appropriate engines constraint, and Rust 1.99.1 with rustfmt and clippy
+          in rust-toolchain.toml. Set package private. Choose mutually compatible
+          stable dependencies; do not upgrade machine-wide tools. Use strict
+          TypeScript checks for app and build configuration. Provide ESLint flat
+          config with TypeScript/React hooks rules and Prettier without conflicting
+          rules. Ignore dependencies, dist, src-tauri/target, generated Tauri schemas,
+          local environment/editor files and .nexus/ in formatting as appropriate;
+          never ignore either lockfile, desktop icons or source configuration.
+          Ignore additional local-only files if actual tools create them.
+
+          Create src-tauri/Cargo.toml, Cargo.lock, build.rs, src/main.rs,
+          src/lib.rs, tauri.conf.json, a least-privilege main-window capability
+          only if needed, and all desktop assets under src-tauri/icons/.
+          Keep the native app a standard Tauri v2 Builder without sample commands,
+          plugins or added services. Use normal decorations and resizing.
+          Use a simple neutral icon source and generate the referenced PNG/ICO/ICNS
+          assets with the Tauri CLI; no branding/design exercise is required.
+          Configure desktop bundling without certificates, updater or release config.
+
+          Required public commands and configuration:
+          ```text
+          pnpm dev             -> frontend development server
+          pnpm desktop:dev     -> tauri dev
+          pnpm typecheck       -> all TypeScript configurations, no app emit
+          pnpm lint            -> ESLint, including TS config/test files as appropriate
+          pnpm format          -> format owned code/config/docs
+          pnpm format:check    -> check formatting, excluding runner-owned .nexus/
+          pnpm build           -> typecheck then Vite production build into dist/
+          pnpm test            -> Node built-in infrastructure tests, no watcher
+          pnpm tauri           -> repository-local Tauri v2 CLI
+          pnpm desktop:build   -> tauri build
+          cargo fmt --manifest-path src-tauri/Cargo.toml --all -- --check
+          cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --locked -- -D warnings
+
+          Vite: server.port = 1420, server.strictPort = true; loopback only
+          Tauri build.beforeDevCommand = "pnpm dev"
+          Tauri build.beforeBuildCommand = "pnpm build"
+          Tauri build.devUrl = "http://localhost:1420"
+          Tauri build.frontendDist = "../dist"
+          Tauri: productName = "Blinkr", version = "0.1.0"
+          Tauri: identifier = "dev.blinkr.desktop", main window resizable = true
+          ```
+          A minimal dark/neutral screen with a small Blinkr marker is sufficient.
+          Avoid sample counters, welcome links, IPC demos or product behavior.
+          Use no native privileges beyond those needed by this empty shell.
+          Keep CSP suitable for local bundled assets; do not enable broad remote
+          origins or development-only settings in production.
+
+          Create tests/infrastructure.test.mjs using Node's built-in test runner.
+          Cover the real infrastructure boundary: resolve the actual Vite config
+          through Vite's API; confirm its fixed server URL/port matches Tauri;
+          confirm Tauri's frontendDist resolves to Vite's output directory; after
+          pnpm build, resolve the production entry and its local script/style
+          references and ensure assets and every configured desktop icon exist.
+          Missing output, wrong paths, a port mismatch or missing icons must fail.
+          Handle file URLs and portable filesystem paths correctly on Windows.
+          Do not bind a server or depend on a shared port in these repeated tests.
+          Prefer these meaningful build/configuration checks over installing a
+          component test framework for static launch text or adding fake Rust tests.
+
+          Run all plan checks and pnpm tauri build --no-bundle --ci locally.
+          Immediately exercise pnpm desktop:dev on this macOS host to cross the
+          actual Vite/Rust/webview boundary. Use the visible Nexus terminal for
+          long-running builds/servers. Verify that Vite serves the app, the native
+          process stays alive and, if desktop access permits, that the Blinkr
+          window renders and resizes. Stop only processes this task started.
+          Report defects: [] or explicit failures/limitations and evidence in
+          the task result. Do not present HTTP success alone as a verified window.
+      - id: T2
+        title: Add native CI, document setup, and verify production launch
+        after:
+          - T1
+        files:
+          - .github/workflows/ci.yml
+          - README.md
+        status: done
+        commit: c324e28538c79266808fe500bdefbc3ffba24bbe
+        body: |
+          Read the scaffold and command contracts from the preceding task before
+          writing .github/workflows/ci.yml and updating README.md. These are the
+          only files this task writes. If verification finds a source/config defect
+          requiring another file, report it as defects for a properly scoped fix;
+          do not leave undeclared edits.
+
+          Add GitHub Actions CI for pull requests and pushes to main, with
+          contents: read, sensible timeouts and no credentials or publishing.
+          Match Node/pnpm/Rust versions from the committed scaffold pins, use
+          frozen pnpm installs and --locked Cargo operations, and scope caches
+          to the OS, pinned tools and relevant lockfiles. Validate action versions
+          exist instead of guessing.
+
+          Required job interfaces:
+          ```text
+          frontend quality:
+            pnpm install --frozen-lockfile
+            pnpm format:check
+            pnpm lint
+            pnpm typecheck
+            pnpm build
+            pnpm test
+
+          native matrix:
+            macos-latest, windows-latest, ubuntu-24.04
+            install platform prerequisites and pinned toolchains
+            pnpm install --frozen-lockfile
+            pnpm build
+            pnpm test
+            cargo fmt --manifest-path src-tauri/Cargo.toml --all -- --check
+            cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --locked -- -D warnings
+            cargo test --manifest-path src-tauri/Cargo.toml --locked
+            pnpm tauri build --no-bundle --ci
+          ```
+          It is fine to deduplicate jobs without removing these checks. The final
+          Tauri command must perform a real production native compilation on
+          each native host. Use fail-fast: false for useful matrix results.
+          Rebuild dist before tests or Rust operations that read bundled assets.
+          Do not replace native builds with a Linux-only check or use a release
+          action. Keep shell commands compatible with each runner's shell.
+
+          On Ubuntu install Tauri v2 prerequisites including build-essential,
+          libwebkit2gtk-4.1-dev, libgtk-3-dev, libssl-dev,
+          libayatana-appindicator3-dev, librsvg2-dev, libxdo-dev, file and
+          pkg-config as required by the chosen dependencies. macOS hosted runners
+          supply Xcode; Windows hosted runners supply MSVC/Windows SDK/WebView2,
+          but document these as required for local development. Do not download
+          signing keys, upload releases, create tags or publish build output.
+          CI here compiles unsigned native applications; installers for every
+          OS do not need to be published or exercised in this change.
+
+          Preserve all original README.md prose and headings before its existing
+          Status heading; Markdown whitespace reformatting is allowed. Update
+          Status to say infrastructure exists and product
+          timer/settings work is still pending. Append a developer setup section:
+          exact pinned tool versions, pnpm installation, rustup-based setup
+          for new developers plus the verified Homebrew-Rust path on this Mac,
+          each OS's prerequisites and official Tauri reference links. Explain
+          frontend-only vs desktop development, every quality/test/build command,
+          lockfile usage, dev port collisions, platform-native compilation,
+          production bundle locations and unsigned-build limitations.
+          Do not describe timer/settings as implemented or say remote CI passed.
+
+          Run all plan checks against the final files. Validate the workflow YAML
+          and, where available, actionlint; examine commands for Windows shell
+          behavior. Also check a fresh source copy made outside tracked paths,
+          without node_modules, dist or src-tauri/target: frozen-install, build,
+          infrastructure tests and pnpm tauri build --no-bundle --ci must work.
+          Use a private temporary directory and do not delete or repurpose any
+          user worktree; the runner owns worktree management.
+
+          On macOS run pnpm tauri build --bundles app --ci to produce the unsigned
+          release .app. Attempt launching that bundle independently of the Vite
+          dev server. Verify a visible, resizable Blinkr window if desktop
+          automation is available; otherwise state precisely whether only native
+          process startup was observed and provide a manual launch/resize command.
+          Use a visible Nexus terminal for long builds. Report actual commands,
+          artifact paths and defects: [] or explicit limitations. Do not claim
+          Windows/Linux builds executed merely because CI now describes them.
