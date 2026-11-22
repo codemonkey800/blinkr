@@ -97,6 +97,27 @@ stopped. There is no audio and no countdown or clock readout anywhere.
 Defaults: a 2-second flash every 10 minutes, a smooth pulse at 60% intensity and 1 per
 second, in amber on a dark idle color.
 
+## Download
+
+Installers for the latest build of `main` are on the
+[latest release](https://github.com/codemonkey800/blinkr/releases/latest):
+
+| Platform                        | File                                                                                                                                |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| macOS (Apple Silicon and Intel) | [Blinkr-macos-universal.dmg](https://github.com/codemonkey800/blinkr/releases/latest/download/Blinkr-macos-universal.dmg)           |
+| Windows 10 and 11, installer    | [Blinkr-windows-x64-setup.exe](https://github.com/codemonkey800/blinkr/releases/latest/download/Blinkr-windows-x64-setup.exe)       |
+| Windows 10 and 11, portable     | [Blinkr-windows-x64-portable.exe](https://github.com/codemonkey800/blinkr/releases/latest/download/Blinkr-windows-x64-portable.exe) |
+| Linux, any distro               | [Blinkr-linux-x86_64.AppImage](https://github.com/codemonkey800/blinkr/releases/latest/download/Blinkr-linux-x86_64.AppImage)       |
+| Linux, Debian and Ubuntu        | [Blinkr-linux-amd64.deb](https://github.com/codemonkey800/blinkr/releases/latest/download/Blinkr-linux-amd64.deb)                   |
+
+The installers are not code-signed, so the first launch shows a warning:
+
+- **macOS:** open the DMG and drag Blinkr to Applications. On first launch, choose Done,
+  then go to System Settings, Privacy & Security, and click Open Anyway.
+- **Windows:** when SmartScreen appears, click More info, then Run anyway. The portable
+  exe runs without installing, and keeps its settings in your user AppData folder.
+- **Linux AppImage:** mark it executable with `chmod +x`, then run it.
+
 ## Usage
 
 ### Control bar
@@ -326,10 +347,13 @@ embeds `dist` and does not need the development server on port 1420.
 
 The macOS output is `src-tauri/target/release/bundle/macos/Blinkr.app`; analogous native
 outputs live below `src-tauri/target/release/bundle/` on their respective hosts. These
-builds are unsigned: macOS Gatekeeper and platform signing policies can block normal
-distribution. This repository does not publish installers, releases, tags, or signing
-artifacts. See the official [Tauri distribution guide](https://v2.tauri.app/distribute/)
-for release signing and packaging guidance.
+builds are not code-signed. macOS builds are ad-hoc signed, so Gatekeeper shows an
+unverified-developer warning instead of calling the app damaged.
+
+The Release workflow runs after CI passes on `main`. It builds a universal macOS DMG, a
+Windows NSIS installer and portable exe, and a Linux AppImage and deb. It then replaces
+the rolling `latest` GitHub Release and its tag. It can also be started by hand from the
+Actions tab.
 
 Both `pnpm-lock.yaml` and `src-tauri/Cargo.lock` are part of the reproducible build
 contract. Keep them committed and use `--frozen-lockfile` for pnpm plus `--locked` for
